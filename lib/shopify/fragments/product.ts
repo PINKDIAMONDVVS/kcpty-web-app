@@ -56,6 +56,12 @@ const productFragment = /* GraphQL */ `
     }
     tags
     updatedAt
+    intents: metafield(namespace: "custom", key: "intents") {
+      value
+    }
+    materials: metafield(namespace: "custom", key: "materials") {
+      value
+    }
   }
   ${imageFragment}
   ${seoFragment}

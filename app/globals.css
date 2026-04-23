@@ -342,7 +342,7 @@ body::after {
 }
 
 /* ---- Page wrap ---- */
-.page-wrap { min-height: 100vh; position: relative; z-index: 1; }
+.page-wrap { min-height: 100vh; position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
 
 /* ---- NAV ---- */
 .nav {
@@ -693,7 +693,11 @@ body::after {
 .pdp__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .pdp__main { position: relative; overflow: hidden; background: var(--bg-2); }
 .pdp__main img { width: 100%; height: 100%; object-fit: cover; }
-.pdp__info { padding: 56px; background: var(--bg); max-width: 720px; }
+.pdp__info { padding: 56px; background: var(--bg); max-width: 720px; overflow-y: auto; }
+
+/* ---- PDP care section ---- */
+.pdp-care { display: grid; grid-template-columns: auto 1fr; gap: 60px; align-items: center; }
+.pdp-care-tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 32px; }
 
 /* ---- About / story ---- */
 .story-grid { display: grid; grid-template-columns: 1fr 1fr; }
@@ -820,6 +824,80 @@ body::after {
   font-size: 10.5px; color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.18em;
 }
 
+/* ---- Shop page ---- */
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 48px 0 28px;
+}
+.shop-header__meta { display: block; }
+
+.shop-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg-1);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.shop-filter-left  { display: flex; gap: 8px; align-items: center; }
+.shop-filter-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--line);
+  max-width: 1520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.shop-list-row {
+  display: grid;
+  grid-template-columns: 72px 1.4fr 1fr 1fr 72px;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+}
+.shop-list-row .sm-hide { display: block; }
+
+.shop-footnote {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+}
+.shop-footnote__side { display: block; }
+
+@media (max-width: 1100px) {
+  .shop-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .shop-header { flex-direction: column; align-items: flex-start; padding: 32px 0 20px; }
+  .shop-header__meta { display: none; }
+  .shop-filter-bar { flex-wrap: wrap; gap: 8px; padding: 10px 0; top: 0; }
+  .shop-filter-left  { width: 100%; }
+  .shop-filter-right { width: 100%; justify-content: space-between; }
+  .shop-grid { grid-template-columns: repeat(2, 1fr); }
+  .shop-list-row { grid-template-columns: 56px 1fr auto; gap: 12px; }
+  .shop-list-row .sm-hide { display: none; }
+  .shop-footnote { flex-direction: column; text-align: center; gap: 16px; }
+  .shop-footnote__side { display: none; }
+}
+@media (max-width: 480px) {
+  .shop-grid { grid-template-columns: 1fr; }
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 1024px) {
   .hero__stage      { grid-template-columns: 1fr; min-height: auto; }
@@ -832,6 +910,10 @@ body::after {
   .hero__grid       { grid-template-columns: 1fr; }
   .pdp              { grid-template-columns: 1fr; }
   .pdp__media       { position: relative; top: 0; height: 90vh; }
+  .pdp__info        { padding: 36px 32px; max-width: 100%; }
+  .pdp-care         { grid-template-columns: 1fr; gap: 32px; }
+  .pdp-care__zh     { writing-mode: horizontal-tb; font-size: 40px !important; }
+  .pdp-care-tips    { grid-template-columns: 1fr 1fr; gap: 20px; }
   .story-grid       { grid-template-columns: 1fr; }
   .story-grid > *   { border-right: none; }
   .foot__row        { grid-template-columns: 1fr 1fr; }
@@ -840,6 +922,14 @@ body::after {
   .container, .kpcty-container { padding: 0 20px; }
   .sec-head         { grid-template-columns: 1fr; gap: 12px; padding: 40px 0 16px; }
   .sec-head__meta   { text-align: left; }
+  .pdp__info        { padding: 28px 20px; }
+  .pdp-care-tips    { grid-template-columns: 1fr; }
+  /* Lookbook: collapse to 2-column editorial grid on mobile */
+  .look-editorial   { grid-template-columns: repeat(2, 1fr) !important; }
+  .look-editorial > * { grid-column: span 1 !important; grid-row: span 1 !important; min-height: 200px; }
+  /* Lookbook magazine cover: stack vertically */
+  .look-cover       { grid-template-columns: 1fr !important; gap: 20px !important; }
+  .look-cover-side  { display: none; }
 }
 
 /* ---- Light theme override ---- */

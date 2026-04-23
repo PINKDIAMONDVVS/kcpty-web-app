@@ -133,6 +133,8 @@ export type ShopifyProduct = {
   seo: SEO;
   tags: string[];
   updatedAt: string;
+  intents:   { value: string } | null;
+  materials: { value: string } | null;
 };
 
 export type ShopifyCartOperation = {
