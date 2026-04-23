@@ -1,16 +1,16 @@
 const ITEMS = [
-  '刻线 · KPCTY',
-  '韩巷 · BROOKLYN',
-  'S1 / 2026 · LIVE',
-  'ONE-OF-ONE',
-  'CERTIFIED',
-  'ETHICALLY SOURCED',
-  'CORD-STRUNG BY HAND',
-  '29 OBJECTS · 8 WISHES',
-  'SIG. 0x9F·KPC·S1',
+  '⦿ NATURAL STONE · 天然石',
+  '⦿ HAND-STRUNG · 手串',
+  '⦿ AGARWOOD · 沉香',
+  '⦿ HETIAN JADE · 碧玉',
+  '⦿ CINNABAR · 朱砂',
+  '⦿ QINAN · 奇楠',
+  '⦿ AMAZONITE · 天河石',
+  '⦿ SEASON ONE · 一季',
+  '⊕ KPCTY · 刻线',
+  '⦿ BEESWAX AMBER · 蜜蜡',
 ];
 
-// Doubled for seamless loop
 const TRACK = [...ITEMS, ...ITEMS];
 
 export function MarqueeBar() {
@@ -18,9 +18,15 @@ export function MarqueeBar() {
     <div className="marquee-wrap">
       <div className="kpcty-marquee">
         {TRACK.map((item, i) => (
-          <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '1.5rem' }}>
+          <span
+            key={i}
+            style={{
+              display: 'inline-flex',
+              gap: '3rem',
+              color: i % 5 === 0 ? 'var(--cinnabar)' : 'var(--fg-2)',
+            }}
+          >
             {item}
-            <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--cinnabar)', flexShrink: 0, display: 'inline-block', boxShadow: '0 0 6px var(--cinnabar)' }} />
           </span>
         ))}
       </div>

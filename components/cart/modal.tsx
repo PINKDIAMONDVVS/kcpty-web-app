@@ -79,10 +79,8 @@ export default function CartModal() {
               style={{
                 position: 'fixed', top: 0, right: 0, bottom: 0,
                 width: 420, maxWidth: '100vw',
-                background: 'rgba(7,7,10,0.88)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                borderLeft: '1px solid var(--line-2)',
+                background: 'var(--bg)',
+                borderLeft: '1px solid var(--line)',
                 display: 'flex', flexDirection: 'column',
                 color: 'var(--fg)',
               }}
@@ -185,16 +183,8 @@ export default function CartModal() {
 
                   {/* Footer */}
                   <div style={{ padding: '20px 24px', borderTop: '1px solid var(--line)', background: 'var(--bg-1)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <span className="mono up" style={{ fontSize: 10, letterSpacing: '0.18em', color: 'var(--fg-3)' }}>Taxes</span>
-                      <Price className="mono" style={{ fontSize: 12 }} amount={cart.cost.totalTaxAmount.amount} currencyCode={cart.cost.totalTaxAmount.currencyCode} />
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <span className="mono up" style={{ fontSize: 10, letterSpacing: '0.18em', color: 'var(--fg-3)' }}>Shipping</span>
-                      <span className="mono" style={{ fontSize: 12, color: 'var(--fg-2)' }}>Calculated at checkout</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingTop: 10, borderTop: '1px solid var(--line)' }}>
-                      <span className="mono up" style={{ fontSize: 10, letterSpacing: '0.18em', color: 'var(--fg-3)' }}>Total</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                      <span className="mono up" style={{ fontSize: 10, letterSpacing: '0.18em', color: 'var(--fg-3)' }}>Subtotal</span>
                       <Price className="mono" style={{ fontSize: 14, color: 'var(--fg)' }} amount={cart.cost.totalAmount.amount} currencyCode={cart.cost.totalAmount.currencyCode} />
                     </div>
                     <form action={redirectToCheckout}>

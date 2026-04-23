@@ -35,12 +35,12 @@ export function Announce() {
         className="kpcty-container"
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24 }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--fg-3)' }}>
           <span className="dot" />
           <span style={{ color: 'var(--cinnabar)' }}>{m.k}</span>
           <span style={{ color: 'var(--fg)' }}>{m.v}</span>
         </span>
-        <span style={{ opacity: 0.65, display: 'flex', gap: 28, color: 'var(--fg-3)' }}>
+        <span style={{ opacity: 0.7, display: 'flex', gap: 28 }}>
           <span>04·22·26 · 刻线 studio / Bushwick</span>
           <span>lat 40.69° · lon -73.93°</span>
         </span>

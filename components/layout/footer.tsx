@@ -19,7 +19,7 @@ const INFO_LINKS = [
 const FOLLOW_LINKS = [
   { label: 'Instagram',  href: 'https://instagram.com/kpcty' },
   { label: 'Newsletter', href: '#newsletter' },
-  { label: 'Wholesale',  href: 'mailto:hello@kpcty.com' },
+  { label: 'Wholesale',  href: 'mailto:wholesale@kpcty.com' },
   { label: 'Contact',    href: 'mailto:hello@kpcty.com' },
 ];
 
@@ -71,7 +71,7 @@ export default function Footer() {
           <div className="foot__col">
             <h4>Follow</h4>
             {FOLLOW_LINKS.map((l) => (
-              <a key={l.href} href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+              <a key={l.label} href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
                 {l.label}
               </a>
             ))}

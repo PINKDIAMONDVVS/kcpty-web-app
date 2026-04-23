@@ -20,7 +20,7 @@ export async function Navbar() {
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 50 }}>
       <Announce />
-      <nav className="nav" style={{ position: 'static' }}>
+      <nav className="nav">
         <div className="kpcty-container nav__row">
           <NavLinks />
           <Link href="/" prefetch={true} style={{ textDecoration: 'none' }}>
