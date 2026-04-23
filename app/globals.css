@@ -699,6 +699,12 @@ body::after {
 .pdp-care { display: grid; grid-template-columns: auto 1fr; gap: 60px; align-items: center; }
 .pdp-care-tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 32px; }
 
+/* ---- About page ---- */
+.about-intro   { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; padding: 80px 0 60px; }
+.about-timeline { display: grid; grid-template-columns: repeat(5, 1fr); }
+.about-values  { display: grid; grid-template-columns: repeat(3, 1fr); }
+.about-founder { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 80px; align-items: start; }
+
 /* ---- About / story ---- */
 .story-grid { display: grid; grid-template-columns: 1fr 1fr; }
 .story-grid > * { padding: 60px 40px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -917,6 +923,12 @@ body::after {
   .story-grid       { grid-template-columns: 1fr; }
   .story-grid > *   { border-right: none; }
   .foot__row        { grid-template-columns: 1fr 1fr; }
+  /* About page */
+  .about-intro      { grid-template-columns: 1fr; gap: 40px; padding: 60px 0 40px; }
+  .about-timeline   { grid-template-columns: 1fr 1fr; }
+  .about-values     { grid-template-columns: 1fr; }
+  .about-values > * { border-right: none !important; }
+  .about-founder    { grid-template-columns: 1fr; gap: 48px; }
 }
 @media (max-width: 768px) {
   .container, .kpcty-container { padding: 0 20px; }
@@ -930,6 +942,10 @@ body::after {
   /* Lookbook magazine cover: stack vertically */
   .look-cover       { grid-template-columns: 1fr !important; gap: 20px !important; }
   .look-cover-side  { display: none; }
+  /* About page */
+  .about-timeline   { grid-template-columns: 1fr; }
+  .about-timeline > * { border-right: none !important; }
+  .about-letter-body { columns: 1 !important; }
 }
 
 /* ---- Light theme override ---- */
