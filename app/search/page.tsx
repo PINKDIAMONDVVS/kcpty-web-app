@@ -1,4 +1,5 @@
 import { getProducts } from 'lib/shopify';
+import { Suspense } from 'react';
 import { ShopClient } from './shop-client';
 
 export const metadata = {
@@ -8,5 +9,9 @@ export const metadata = {
 
 export default async function ShopPage() {
   const products = await getProducts({});
-  return <ShopClient products={products} />;
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--bg)' }} />}>
+      <ShopClient products={products} />
+    </Suspense>
+  );
 }

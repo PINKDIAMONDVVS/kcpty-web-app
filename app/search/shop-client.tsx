@@ -3,6 +3,7 @@
 import type { Product } from 'lib/shopify/types';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 /* ── Helpers ── */
@@ -49,11 +50,7 @@ function useDropdown() {
 
 export function ShopClient({ products }: { products: Product[] }) {
   const { open, setOpen, ref: barRef } = useDropdown();
-
-  const [matFilter,    setMatFilter]    = useState('all');
-  const [intentFilter, setIntentFilter] = useState('all');
-  const [sort,         setSort]         = useState<SortKey>('default');
-  const [view,         setView]         = useState<ViewKey>('grid');
+  const searchParams = useSearchParams();
 
   const allMaterials = useMemo(() => {
     const s = new Set<string>();
@@ -66,6 +63,30 @@ export function ShopClient({ products }: { products: Product[] }) {
     products.forEach((p) => parseList(p.intents?.value).forEach((v) => s.add(v)));
     return Array.from(s).sort();
   }, [products]);
+
+  /* Match URL param case-insensitively against real intent values */
+  const initialIntent = useMemo(() => {
+    const q = searchParams.get('intent');
+    if (!q) return 'all';
+    const hit = allIntents.find((v) => v.toLowerCase() === q.toLowerCase());
+    return hit ?? 'all';
+  }, [searchParams, allIntents]);
+
+  const initialMaterial = useMemo(() => {
+    const q = searchParams.get('material');
+    if (!q) return 'all';
+    const hit = allMaterials.find((v) => v.toLowerCase() === q.toLowerCase());
+    return hit ?? 'all';
+  }, [searchParams, allMaterials]);
+
+  const [matFilter,    setMatFilter]    = useState(initialMaterial);
+  const [intentFilter, setIntentFilter] = useState(initialIntent);
+  const [sort,         setSort]         = useState<SortKey>('default');
+  const [view,         setView]         = useState<ViewKey>('grid');
+
+  /* Sync if URL changes (e.g. clicking an intent card while already on /search) */
+  useEffect(() => { setIntentFilter(initialIntent); }, [initialIntent]);
+  useEffect(() => { setMatFilter(initialMaterial); }, [initialMaterial]);
 
   const filtered = useMemo(() => {
     let arr = [...products];

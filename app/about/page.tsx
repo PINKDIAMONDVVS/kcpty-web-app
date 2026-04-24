@@ -75,7 +75,7 @@ export default function AboutPage() {
             </div>
             <div style={{ alignSelf: 'end' }}>
               <p className="serif" style={{ fontSize: 24, lineHeight: 1.35, marginBottom: 24 }}>
-                KPCTY (刻线 · kè xiàn · "carved line") is a jewelry studio that restrings the
+                KPCTY (刻瓷 · kè xiàn · "carved line") is a jewelry studio that restrings the
                 oldest material culture in the Chinese world —{' '}
                 <em style={{ color: 'var(--cinnabar)' }}>beads for thinking</em> — for a
                 generation that never knew it was missing them.

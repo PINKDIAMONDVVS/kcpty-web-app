@@ -95,13 +95,13 @@ export default function LookbookPage() {
             {/* Centre title */}
             <div style={{ textAlign: 'center' }}>
               <div className="serif-sc" style={{ fontSize: 18, color: 'var(--cinnabar)', letterSpacing: '0.4em' }}>
-                刻线图册
+                刻瓷图册
               </div>
               <h1 className="display" style={{ fontSize: 'clamp(80px,13vw,220px)', lineHeight: 0.85, margin: '6px 0' }}>
                 Lookbook<span style={{ color: 'var(--cinnabar)', fontStyle: 'italic' }}>.</span>
               </h1>
               <div className="mono up" style={{ fontSize: 11, opacity: 0.6, letterSpacing: '0.28em' }}>
-                ART DIR. K. SHI · PHOTO. 刻线 WORKSHOP · PRINTED ON RICE PAPER
+                ART DIR. K. SHI · PHOTO. 刻瓷 WORKSHOP · PRINTED ON RICE PAPER
               </div>
             </div>
 
