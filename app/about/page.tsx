@@ -182,7 +182,7 @@ export default function AboutPage() {
                   alt="Ken Shi, founder"
                   width={480}
                   height={640}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', justifyContent: 'center' }}
                 />
               </div>
               <div className="label-box">

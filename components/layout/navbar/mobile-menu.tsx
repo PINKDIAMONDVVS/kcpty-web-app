@@ -1,104 +1,127 @@
-"use client";
+'use client';
 
-import { Dialog, Transition } from "@headlessui/react";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { Fragment, Suspense, useEffect, useState } from "react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Menu } from "lib/shopify/types";
-import Search, { SearchSkeleton } from "./search";
+const NAV = [
+  { label: 'Home',     zh: '家', href: '/' },
+  { label: 'Shop',     zh: '店', href: '/search' },
+  { label: 'Lookbook', zh: '册', href: '/lookbook' },
+  { label: 'Studio',   zh: '说', href: '/about' },
+];
 
-export default function MobileMenu({ menu }: { menu: Menu[] }) {
+const AUX = [
+  { label: 'Search',  hint: '⌕',    href: '/search' },
+  { label: 'Account', hint: '⊙',    href: '/account' },
+];
+
+export function MobileMenu() {
+  const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
-  const openMobileMenu = () => setIsOpen(true);
-  const closeMobileMenu = () => setIsOpen(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setIsOpen(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isOpen]);
+  /* Close on route change */
+  useEffect(() => { setOpen(false); }, [pathname]);
 
+  /* Close on Escape */
   useEffect(() => {
-    setIsOpen(false);
-  }, [pathname, searchParams]);
+    if (!open) return;
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setOpen(false); }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
+  /* Lock body scroll while open */
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  /* Auto-close if the viewport grows past the mobile breakpoint */
+  useEffect(() => {
+    function onResize() { if (window.innerWidth > 768) setOpen(false); }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   return (
     <>
       <button
-        onClick={openMobileMenu}
-        aria-label="Open mobile menu"
-        className="flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors md:hidden dark:border-neutral-700 dark:text-white"
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+        className="nav__hamburger"
       >
-        <Bars3Icon className="h-4" />
+        <span /><span /><span />
       </button>
-      <Transition show={isOpen}>
-        <Dialog onClose={closeMobileMenu} className="relative z-50">
-          <Transition.Child
-            as={Fragment}
-            enter="transition-all ease-in-out duration-300"
-            enterFrom="opacity-0 backdrop-blur-none"
-            enterTo="opacity-100 backdrop-blur-[.5px]"
-            leave="transition-all ease-in-out duration-200"
-            leaveFrom="opacity-100 backdrop-blur-[.5px]"
-            leaveTo="opacity-0 backdrop-blur-none"
-          >
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          </Transition.Child>
-          <Transition.Child
-            as={Fragment}
-            enter="transition-all ease-in-out duration-300"
-            enterFrom="translate-x-[-100%]"
-            enterTo="translate-x-0"
-            leave="transition-all ease-in-out duration-200"
-            leaveFrom="translate-x-0"
-            leaveTo="translate-x-[-100%]"
-          >
-            <Dialog.Panel className="fixed bottom-0 left-0 right-0 top-0 flex h-full w-full flex-col bg-white pb-6 dark:bg-black">
-              <div className="p-4">
-                <button
-                  className="mb-4 flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors dark:border-neutral-700 dark:text-white"
-                  onClick={closeMobileMenu}
-                  aria-label="Close mobile menu"
-                >
-                  <XMarkIcon className="h-6" />
-                </button>
 
-                <div className="mb-4 w-full">
-                  <Suspense fallback={<SearchSkeleton />}>
-                    <Search />
-                  </Suspense>
-                </div>
-                {menu.length ? (
-                  <ul className="flex w-full flex-col">
-                    {menu.map((item: Menu) => (
-                      <li
-                        className="py-2 text-xl text-black transition-colors hover:text-neutral-500 dark:text-white"
-                        key={item.title}
-                      >
-                        <Link
-                          href={item.path}
-                          prefetch={true}
-                          onClick={closeMobileMenu}
-                        >
-                          {item.title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </div>
-            </Dialog.Panel>
-          </Transition.Child>
-        </Dialog>
-      </Transition>
+      {/* Backdrop */}
+      <div
+        className={`mobile-menu__backdrop${open ? ' is-open' : ''}`}
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
+
+      {/* Drawer */}
+      <aside
+        className={`mobile-menu${open ? ' is-open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation"
+      >
+        <div className="mobile-menu__head">
+          <div className="mono up" style={{ fontSize: 10, color: 'var(--cinnabar)', letterSpacing: '0.22em' }}>
+            § Index · 目录
+          </div>
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Close menu"
+            className="mobile-menu__close"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav className="mobile-menu__nav">
+          {NAV.map((item, i) => {
+            const active =
+              pathname === item.href ||
+              (item.href !== '/' && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`mobile-menu__link${active ? ' is-active' : ''}`}
+              >
+                <span className="mobile-menu__link-num">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="mobile-menu__link-label">{item.label}</span>
+                <span className="mobile-menu__link-zh">{item.zh}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mobile-menu__aux">
+          {AUX.map((item) => (
+            <Link key={item.href} href={item.href} className="mobile-menu__aux-link">
+              <span style={{ color: 'var(--cinnabar)', marginRight: 8 }}>{item.hint}</span>
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="mobile-menu__foot">
+          <div style={{ fontFamily: 'Noto Serif SC, serif', fontSize: 44, color: 'var(--cinnabar)', opacity: 0.22, lineHeight: 1 }}>
+            刻瓷
+          </div>
+          <div className="mono up" style={{ fontSize: 9.5, color: 'var(--fg-4)', letterSpacing: '0.22em', marginTop: 10 }}>
+            Brooklyn · NY · S1 · One-of-one
+          </div>
+        </div>
+      </aside>
     </>
   );
 }

@@ -161,15 +161,7 @@ export default async function HomePage() {
                 <br />
                 stone<span className="zh">。</span>
               </h1>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "auto 1fr",
-                  gap: 24,
-                  alignItems: "end",
-                  maxWidth: 620,
-                }}
-              >
+              <div className="hero__sub">
                 <div
                   className="mono"
                   style={{
@@ -372,15 +364,8 @@ export default async function HomePage() {
       <MarqueeBar />
 
       {/* ── MANIFESTO § 01 ───────────────────────────────────────────── */}
-      <section className="kpcty-container" style={{ padding: "80px 0 20px" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 2fr",
-            gap: 64,
-            alignItems: "start",
-          }}
-        >
+      <section className="kpcty-container section-pad-lg">
+        <div className="premise-grid">
           <div>
             <div
               className="mono up"
@@ -394,9 +379,10 @@ export default async function HomePage() {
             <h2
               className="display"
               style={{
-                fontSize: "clamp(48px,6vw,92px)",
+                fontSize: "clamp(36px,6vw,92px)",
                 marginBottom: 24,
                 color: "var(--fg)",
+                lineHeight: 0.98,
               }}
             >
               Every piece is a{" "}
@@ -406,17 +392,10 @@ export default async function HomePage() {
               <br />
               strung onto your wrist.
             </h2>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 40,
-                marginTop: 36,
-              }}
-            >
+            <div className="premise-prose">
               <p
                 className="serif"
-                style={{ fontSize: 20, lineHeight: 1.4, color: "var(--fg-2)" }}
+                style={{ fontSize: 18, lineHeight: 1.4, color: "var(--fg-2)" }}
               >
                 In Chinese tradition, every stone carries a{" "}
                 <em style={{ color: "var(--fg)" }}>寄托 (jìtuō)</em> — a
@@ -425,7 +404,7 @@ export default async function HomePage() {
               </p>
               <p
                 className="serif"
-                style={{ fontSize: 20, lineHeight: 1.4, color: "var(--fg-2)" }}
+                style={{ fontSize: 18, lineHeight: 1.4, color: "var(--fg-2)" }}
               >
                 Our 29 pieces are sorted by intention, not trend. Pick one for
                 the mood you&apos;re in, the friend you want to be, or the
@@ -595,22 +574,14 @@ export default async function HomePage() {
 
       {/* ── RITUAL § 04 ──────────────────────────────────────────────── */}
       <section
+        className="section-pad-xl"
         style={{
           background: "var(--bg-1)",
           borderTop: "1px solid var(--line)",
           borderBottom: "1px solid var(--line)",
-          padding: "120px 0",
         }}
       >
-        <div
-          className="kpcty-container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.2fr 1fr",
-            gap: 80,
-            alignItems: "center",
-          }}
-        >
+        <div className="kpcty-container ritual-grid">
           <div>
             <div
               className="mono up"
@@ -621,10 +592,11 @@ export default async function HomePage() {
             <h2
               className="display"
               style={{
-                fontSize: "clamp(56px,8vw,140px)",
+                fontSize: "clamp(44px,8vw,140px)",
                 marginTop: 20,
                 marginBottom: 28,
                 color: "var(--fg)",
+                lineHeight: 0.95,
               }}
             >
               A bead is a<br />
@@ -638,7 +610,7 @@ export default async function HomePage() {
             <p
               className="serif"
               style={{
-                fontSize: 22,
+                fontSize: 20,
                 lineHeight: 1.4,
                 maxWidth: "42ch",
                 color: "var(--fg-2)",
@@ -648,7 +620,7 @@ export default async function HomePage() {
               strings — 108 repetitions, one per bead. We kept that rhythm and
               lost the seriousness.
             </p>
-            <div style={{ display: "flex", gap: 20, marginTop: 40 }}>
+            <div className="ritual-methods">
               <div className="label-box">
                 METHOD 01
                 <br />
@@ -673,22 +645,7 @@ export default async function HomePage() {
               }}
               alt="ritual"
             />
-            <div
-              style={{
-                position: "absolute",
-                top: -20,
-                right: -20,
-                background: "var(--cinnabar)",
-                padding: "20px 24px",
-                fontFamily: "Noto Serif SC, serif",
-                fontSize: 28,
-                fontWeight: 600,
-                color: "var(--fg)",
-                transform: "rotate(3deg)",
-              }}
-            >
-              一石一愿
-            </div>
+            <div className="ritual-stamp">一石一愿</div>
           </div>
         </div>
       </section>
@@ -771,19 +728,10 @@ export default async function HomePage() {
           borderBottom: "1px solid var(--line)",
         }}
       >
-        <div
-          className="kpcty-container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "auto 1fr auto",
-            gap: 60,
-            alignItems: "center",
-          }}
-        >
+        <div className="kpcty-container press-quote">
           <div
-            className="serif"
+            className="press-quote__mark serif"
             style={{
-              fontSize: 160,
               lineHeight: 0.8,
               color: "var(--cinnabar)",
               opacity: 0.6,
@@ -795,7 +743,7 @@ export default async function HomePage() {
             <p
               className="serif"
               style={{
-                fontSize: "clamp(28px,3.5vw,48px)",
+                fontSize: "clamp(22px,3.5vw,48px)",
                 lineHeight: 1.25,
                 color: "var(--fg)",
               }}
@@ -811,7 +759,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div
-            className="vert-zh serif-sc"
+            className="vert-zh serif-sc press-quote__side"
             style={{ fontSize: 26, color: "var(--cinnabar)", opacity: 0.5 }}
           >
             语语
@@ -821,8 +769,8 @@ export default async function HomePage() {
 
       {/* ── NEWSLETTER § 06 ──────────────────────────────────────────── */}
       <section
-        className="kpcty-container"
-        style={{ padding: "100px 0", textAlign: "center" }}
+        className="kpcty-container section-pad-xl"
+        style={{ textAlign: "center" }}
       >
         <div className="mono up" style={{ fontSize: 11, color: "var(--fg-3)" }}>
           § 06 · Subscribe
@@ -830,10 +778,11 @@ export default async function HomePage() {
         <h2
           className="display"
           style={{
-            fontSize: "clamp(56px,8vw,140px)",
+            fontSize: "clamp(40px,8vw,140px)",
             marginTop: 12,
             marginBottom: 20,
             color: "var(--fg)",
+            lineHeight: 0.95,
           }}
         >
           Letters from the{" "}
@@ -844,7 +793,7 @@ export default async function HomePage() {
         <p
           className="serif"
           style={{
-            fontSize: 22,
+            fontSize: 19,
             maxWidth: "54ch",
             margin: "0 auto 40px",
             lineHeight: 1.4,

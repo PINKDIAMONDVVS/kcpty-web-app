@@ -335,7 +335,7 @@ export function PdpClient({
             </h2>
             <div className="sec-head__meta">FROM THE SAME HANDS</div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          <div className="pdp-reco-grid">
             {recommendations.slice(0, 4).map((r) => (
               <RecoCard key={r.id} product={r} />
             ))}

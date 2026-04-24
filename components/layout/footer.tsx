@@ -1,140 +1,153 @@
+import { parseList, resolveIntent } from "lib/intents";
+import { resolveMaterial } from "lib/materials";
+import { getProducts } from "lib/shopify";
 import Link from "next/link";
 
-const SHOP_LINKS = [
-  { label: "All Pieces", href: "/search" },
-  { label: "Luck · 福", href: "/search?intention=luck" },
-  { label: "Calm · 静", href: "/search?intention=calm" },
-  { label: "Courage · 勇", href: "/search?intention=courage" },
-  { label: "Wealth · 财", href: "/search?intention=wealth" },
-];
+/* Pull the top-N materials + intents from the live catalogue so the
+ * footer shortcuts actually point at real filter states. */
+async function getFooterFacets() {
+  try {
+    const products = await getProducts({});
 
-const INFO_LINKS = [
-  { label: "About the Studio", href: "/about" },
-  { label: "Stone Sourcing", href: "/about#sourcing" },
-  { label: "Care Guide", href: "/about#care" },
-  { label: "Sizing", href: "/about#sizing" },
-  { label: "Shipping & Returns", href: "/about#shipping" },
-];
+    const bump = (map: Map<string, { count: number; original: string }>, raw: string) => {
+      const key = raw.trim().toLowerCase();
+      if (!key) return;
+      const entry = map.get(key) ?? { count: 0, original: raw.trim() };
+      entry.count += 1;
+      map.set(key, entry);
+    };
 
-const FOLLOW_LINKS = [
-  { label: "Instagram", href: "https://instagram.com/kpcty" },
-  { label: "Newsletter", href: "#newsletter" },
+    const mats = new Map<string, { count: number; original: string }>();
+    const ints = new Map<string, { count: number; original: string }>();
+    for (const p of products) {
+      for (const v of parseList(p.materials?.value)) bump(mats, v);
+      for (const v of parseList(p.intents?.value))   bump(ints, v);
+    }
+
+    const sortByCount = <T extends { count: number }>(m: Map<string, T>) =>
+      Array.from(m.entries()).sort((a, b) => b[1].count - a[1].count);
+
+    const materials = sortByCount(mats).slice(0, 5).map(([key, { original }]) => ({
+      key,
+      label: original,
+      zh:    resolveMaterial(key).zh,
+    }));
+
+    const intents = sortByCount(ints).slice(0, 4).map(([key, { original }]) => ({
+      key,
+      label: original,
+      zh:    resolveIntent(key).zh,
+    }));
+
+    return { materials, intents, total: products.length };
+  } catch {
+    return { materials: [], intents: [], total: 0 };
+  }
+}
+
+const STUDIO_LINKS = [
+  { label: "About",     href: "/about" },
+  { label: "Our makers",href: "/about#makers" },
+  { label: "Journal",   href: "/lookbook" },
+  { label: "Repairs",   href: "/about#repairs" },
   { label: "Wholesale", href: "mailto:wholesale@kpcty.com" },
-  { label: "Contact", href: "mailto:hello@kpcty.com" },
+  { label: "Press kit", href: "/about#press" },
 ];
 
-export default function Footer() {
+const POLICY_LINKS = [
+  { label: "Shipping",            href: "/about#shipping" },
+  { label: "Returns",             href: "/about#returns" },
+  { label: "Warranty (forever)", href: "/about#warranty" },
+  { label: "Care · 养",           href: "/about#care" },
+  { label: "FAQ",                 href: "/about#faq" },
+  { label: "Contact",             href: "mailto:hello@kpcty.com" },
+];
+
+const SOCIALS = [
+  { label: "Instagram",   href: "https://instagram.com/kpcty" },
+  { label: "TikTok",      href: "https://tiktok.com/@kpcty" },
+  { label: "Xiaohongshu", href: "https://xiaohongshu.com/" },
+  { label: "Substack",    href: "#newsletter" },
+];
+
+export default async function Footer() {
+  const { materials } = await getFooterFacets();
+
   return (
     <footer className="foot">
-      <div className="kpcty-container foot__inner">
-        <div className="foot__row">
-          {/* Brand col */}
+      <div className="kpcty-container">
+        <div className="foot__inner">
+          <div className="foot__row">
+
+          {/* ── Brand col ── */}
           <div className="foot__col">
-            <div style={{ marginBottom: 20 }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 12,
-                }}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 22 22"
-                  aria-hidden="true"
-                >
-                  <circle cx="11" cy="11" r="10" fill="var(--cinnabar)" />
-                  <circle
-                    cx="11"
-                    cy="11"
-                    r="10"
-                    fill="none"
-                    stroke="var(--fg)"
-                    strokeOpacity=".12"
-                  />
-                </svg>
-                <span
-                  className="mono"
-                  style={{ fontSize: 13, letterSpacing: "-0.01em" }}
-                >
-                  KPCTY
-                </span>
-                <span
-                  style={{
-                    fontFamily: "Noto Serif SC, serif",
-                    fontSize: 12,
-                    color: "var(--cinnabar)",
-                    letterSpacing: "0.2em",
-                  }}
-                >
-                  刻瓷
-                </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+              <div style={{
+                width: 48, height: 48,
+                background: "var(--cinnabar)", color: "var(--fg)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "Noto Serif SC, serif", fontWeight: 700, fontSize: 22,
+              }}>
+                刻
               </div>
-              <p
-                className="serif"
-                style={{
-                  fontSize: 15,
-                  lineHeight: 1.55,
-                  color: "var(--fg-2)",
-                  maxWidth: "34ch",
-                }}
-              >
-                Twenty-nine one-of-one bracelets, cut from eight named
-                mountains. Each is a small wish you can wear on your wrist.
-              </p>
+              <div className="serif" style={{ fontSize: 30, letterSpacing: "0.04em" }}>
+                KPCTY
+              </div>
             </div>
-            <div
-              className="mono"
-              style={{
-                fontSize: 10,
-                color: "var(--fg-3)",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                lineHeight: 1.8,
-              }}
-            >
-              Studio / Bushwick · Brooklyn
-              <br />
-              lat 40.69° · lon -73.93°
-              <br />
-              hello@kpcty.com
+            <p className="serif" style={{ fontSize: 17, lineHeight: 1.5, color: "var(--fg-2)", maxWidth: "38ch" }}>
+              Ancient-stone jewelry, re-strung in Brooklyn. One of one, forever
+              repairable, mailed with a letter.
+            </p>
+            <div className="foot__socials" style={{ marginTop: 22 }}>
+              {SOCIALS.map((s, i) => (
+                <span key={s.label} style={{ display: "inline-flex", alignItems: "center" }}>
+                  <a
+                    href={s.href}
+                    target={s.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noreferrer"
+                  >
+                    {s.label}
+                  </a>
+                  {i < SOCIALS.length - 1 && (
+                    <span style={{ opacity: 0.3, margin: "0 10px" }}>·</span>
+                  )}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Shop col */}
+          {/* ── Shop col ── */}
           <div className="foot__col">
-            <h4>Shop</h4>
-            {SHOP_LINKS.map((l) => (
-              <Link key={l.href} href={l.href}>
-                {l.label}
+            <h4>Shop · 店</h4>
+            <Link href="/search">All pieces</Link>
+            {materials.map((m) => (
+              <Link key={m.key} href={`/search?material=${encodeURIComponent(m.key)}`}>
+                {m.label}{m.zh ? <span style={{ color: "var(--fg-3)", marginLeft: 6 }}> · {m.zh}</span> : null}
               </Link>
             ))}
           </div>
 
-          {/* Info col */}
+          {/* ── Studio col ── */}
           <div className="foot__col">
-            <h4>Information</h4>
-            {INFO_LINKS.map((l) => (
-              <Link key={l.href} href={l.href}>
-                {l.label}
-              </Link>
+            <h4>Studio · 说</h4>
+            {STUDIO_LINKS.map((l) => (
+              l.href.startsWith("mailto") ? (
+                <a key={l.label} href={l.href}>{l.label}</a>
+              ) : (
+                <Link key={l.label} href={l.href}>{l.label}</Link>
+              )
             ))}
           </div>
 
-          {/* Follow col */}
+          {/* ── Policies col ── */}
           <div className="foot__col">
-            <h4>Follow</h4>
-            {FOLLOW_LINKS.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                target={l.href.startsWith("http") ? "_blank" : undefined}
-                rel="noreferrer"
-              >
-                {l.label}
-              </a>
+            <h4>Policies · 规</h4>
+            {POLICY_LINKS.map((l) => (
+              l.href.startsWith("mailto") ? (
+                <a key={l.label} href={l.href}>{l.label}</a>
+              ) : (
+                <Link key={l.label} href={l.href}>{l.label}</Link>
+              )
             ))}
           </div>
         </div>
@@ -146,14 +159,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="foot__bot">
-          <span>
-            © {new Date().getFullYear()} KPCTY · 刻瓷 · All rights reserved.
-          </span>
-          <span style={{ display: "flex", gap: 24 }}>
-            <span>SIG. 0x9F·KPC·S1</span>
-            <span>Season One · 29 / 29</span>
-          </span>
-          <span style={{ color: "var(--fg-4)" }}>ONE-OF-ONE · BROOKLYN</span>
+          <span>© {new Date().getFullYear()} KPCTY STUDIO · ALL RIGHTS RESERVED</span>
+          <span>CUT IN SUZHOU · STRUNG IN BROOKLYN</span>
+          <span style={{ color: "var(--fg-4)" }}>SITE V0.1 · SEASON ONE</span>
+        </div>
         </div>
       </div>
     </footer>

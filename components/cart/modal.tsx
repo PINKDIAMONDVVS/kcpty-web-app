@@ -76,9 +76,10 @@ export default function CartModal() {
             leaveTo="translate-x-full"
           >
             <Dialog.Panel
+              className="cart-panel"
               style={{
                 position: 'fixed', top: 0, right: 0, bottom: 0,
-                width: 420, maxWidth: '100vw',
+                width: 'min(420px, 92vw)',
                 background: 'var(--bg)',
                 borderLeft: '1px solid var(--line)',
                 display: 'flex', flexDirection: 'column',

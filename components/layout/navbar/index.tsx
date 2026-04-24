@@ -1,6 +1,7 @@
 import CartModal from "components/cart/modal";
 import Link from "next/link";
 import { Announce } from "./announce";
+import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
 
 function Logo() {
@@ -35,15 +36,20 @@ export async function Navbar() {
       <Announce />
       <nav className="nav">
         <div className="kpcty-container nav__row">
-          <NavLinks />
+          {/* Desktop nav links (hidden on mobile). Mobile shows hamburger. */}
+          <div className="nav__left">
+            <div className="nav__links-wrap"><NavLinks /></div>
+            <div className="nav__mobile-trigger"><MobileMenu /></div>
+          </div>
+
           <Link href="/" prefetch={true} style={{ textDecoration: "none" }}>
             <Logo />
           </Link>
+
           <div className="nav__right">
-            <a className="nav__link" href="/search" title="Search (⌘K)">
+            <a className="nav__link nav__right-desktop" href="/search" title="Search (⌘K)">
               ⌕ <span style={{ opacity: 0.55 }}>⌘K</span>
             </a>
-            {/* <a className="nav__link" href="/account">Account</a> */}
             <CartModal />
           </div>
         </div>
