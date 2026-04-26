@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const NAV = [
   { label: 'Home',     zh: '家', href: '/' },
@@ -46,24 +47,21 @@ export function MobileMenu() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        aria-label="Open menu"
-        className="nav__hamburger"
-      >
-        <span /><span /><span />
-      </button>
+  /* Portal target — wait until the client mounts so SSR doesn't touch document */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
-      {/* Backdrop */}
+  /* Drawer + backdrop, rendered into <body> via portal so they escape the
+   * navbar's stacking + containing block (the nav has backdrop-filter, which
+   * makes any `position: fixed` descendant resolve relative to the nav box
+   * — that's why the drawer was being clipped to the header strip). */
+  const drawer = (
+    <>
       <div
         className={`mobile-menu__backdrop${open ? ' is-open' : ''}`}
         onClick={() => setOpen(false)}
         aria-hidden
       />
-
-      {/* Drawer */}
       <aside
         className={`mobile-menu${open ? ' is-open' : ''}`}
         role="dialog"
@@ -122,6 +120,19 @@ export function MobileMenu() {
           </div>
         </div>
       </aside>
+    </>
+  );
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+        className="nav__hamburger"
+      >
+        <span /><span /><span />
+      </button>
+      {mounted && createPortal(drawer, document.body)}
     </>
   );
 }
