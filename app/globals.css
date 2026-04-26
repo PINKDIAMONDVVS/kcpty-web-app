@@ -414,6 +414,7 @@ body::after {
   cursor: pointer;
   padding: 10px;
   transition: border-color .15s;
+  z-index: 999;
 }
 .nav__hamburger:hover { border-color: var(--cinnabar); }
 .nav__hamburger span { display: block; height: 1px; width: 100%; background: var(--fg); }
