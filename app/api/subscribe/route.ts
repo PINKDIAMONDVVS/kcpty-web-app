@@ -16,8 +16,10 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const MAX_EMAIL_LEN = 254; // RFC 5321 limit
 
 function generatePassword(): string {
-  // 64 hex chars — way past Shopify's minimum and never returned to client.
-  return crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+  /* Shopify caps passwords at 40 chars and requires at least 5.
+   * 32 hex chars = 128 bits of entropy — way more than needed and
+   * comfortably under the limit. Never returned to the client. */
+  return crypto.randomUUID().replace(/-/g, "");
 }
 
 function jsonError(message: string, status: number) {
@@ -66,21 +68,50 @@ export async function POST(req: Request) {
     const errs = res.body?.data?.customerCreate?.customerUserErrors ?? [];
 
     if (errs.length > 0) {
-      // "TAKEN" / "CUSTOMER_DISABLED" — already a customer; treat as success.
+      /* Print the exact Shopify response so you can see what's failing.
+       * Shopify returns code + field + human-readable message — most useful
+       * codes here are TAKEN / CUSTOMER_DISABLED (already a customer),
+       * BAD_DOMAIN (email blocklisted), INVALID, BLANK. */
+      console.warn(
+        "[subscribe] Shopify customerUserErrors:",
+        JSON.stringify(errs, null, 2),
+      );
+
+      // These all effectively mean "you're already known to us" — treat as success.
       const alreadyExists = errs.some((e) =>
-        ["TAKEN", "CUSTOMER_DISABLED"].includes(e.code),
+        ["TAKEN", "CUSTOMER_DISABLED", "ALREADY_ENABLED"].includes(e.code),
       );
       if (alreadyExists) {
         return NextResponse.json({ ok: true, alreadySubscribed: true });
       }
-      // Don't leak Shopify internal codes to the client.
-      console.warn("[subscribe] Shopify rejected:", errs);
-      return jsonError("We couldn't subscribe you. Please try again.", 400);
+
+      // Pick the most informative message Shopify returned for the user.
+      const firstMsg = errs[0]?.message ?? "We couldn't subscribe you.";
+      const code = errs[0]?.code ?? "UNKNOWN";
+
+      // Friendlier copy for the common ones; raw message otherwise so you can
+      // see exactly what Shopify is complaining about while debugging.
+      let userMsg = firstMsg;
+      if (code === "BAD_DOMAIN") userMsg = "That email domain isn't accepted.";
+      if (code === "INVALID")    userMsg = "Please enter a valid email address.";
+      if (code === "BLANK")      userMsg = "Please enter your email.";
+
+      return NextResponse.json(
+        { error: userMsg, code, debug: errs },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("[subscribe] Shopify error:", err);
-    return jsonError("Something went wrong. Please try again.", 500);
+    console.error("[subscribe] Shopify network/transport error:", err);
+    const message =
+      err && typeof err === "object" && "message" in err
+        ? String((err as { message: unknown }).message)
+        : "Network error reaching Shopify.";
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again.", debug: message },
+      { status: 500 },
+    );
   }
 }
