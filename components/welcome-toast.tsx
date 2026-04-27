@@ -61,8 +61,8 @@ export function WelcomeToast() {
               marginTop: 6,
             }}
           >
-            Twenty-nine one-of-one bracelets, cut in Suzhou and strung in
-            Brooklyn. Once a piece is gone, the stones we bought for it are
+            Spiritual gemstone bracelets, cut in Suzhou and strung in
+            Philadelphia. Once a piece is gone, the stones we bought for it are
             already older than the re-order button.{" "}
             <Link
               href="/search"
@@ -91,7 +91,7 @@ export function WelcomeToast() {
           WebkitBackdropFilter: "blur(14px) saturate(160%)",
           padding: "18px 20px",
         },
-      }
+      },
     );
   }, []);
 

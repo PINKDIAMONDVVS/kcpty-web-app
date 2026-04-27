@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const MESSAGES = [
-  { k: "⊕ LIVE", v: "S1 · 29 pieces · shipping from Brooklyn" },
+  { k: "⊕ LIVE", v: "S1 · shipping from Philadelphia" },
   { k: "⊕ NEW", v: "Code TIANYI — 15% off first stack · 新款" },
   { k: "⊕ LOT", v: "S1-017 · Shuǐ · last 1 of 1" },
 ];
@@ -44,11 +44,34 @@ export function Announce() {
         >
           <span className="dot" />
           <span style={{ color: "var(--cinnabar)" }}>{m.k}</span>
-          <span style={{ color: "var(--fg)", overflow: "hidden", textOverflow: "ellipsis" }}>{m.v}</span>
+          <span
+            style={{
+              color: "var(--fg)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {m.v}
+          </span>
         </span>
         <span className="announce__meta">
-          <span>04·24·26 · 刻瓷 studio / Bushwick</span>
-          <span>lat 40.69° · lon -73.93°</span>
+          <span>
+            {(() => {
+              const d = new Date();
+              const mm = String(d.getMonth() + 1).padStart(2, "0");
+              const dd = String(d.getDate()).padStart(2, "0");
+              const yy = String(d.getFullYear()).slice(-2);
+              const time = d.toLocaleTimeString("en-US", {
+                timeZone: "America/New_York",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              });
+              return `${mm}·${dd}·${yy} · ${time}`;
+            })()}{" "}
+            · 刻瓷 studio / Philadelphia
+          </span>
+          {/* <span>lat 40.69° · lon -73.93°</span> */}
         </span>
         <span className="announce__locale">
           <span>EN · 中</span>

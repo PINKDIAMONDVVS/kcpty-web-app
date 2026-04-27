@@ -351,6 +351,12 @@ body::after {
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   border-bottom: 1px solid var(--line);
 }
+
+@media (max-width: 1023px) {
+  .nav {
+    padding: 14px 0;
+  }
+}
 .nav__row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -414,31 +420,25 @@ body::after {
   cursor: pointer;
   padding: 10px;
   transition: border-color .15s;
-  z-index: 999;
 }
 .nav__hamburger:hover { border-color: var(--cinnabar); }
 .nav__hamburger span { display: block; height: 1px; width: 100%; background: var(--fg); }
 
 /* ---- Mobile menu drawer ---- */
-/* z-indexes are deliberately huge — this drawer must clear the sticky
- * header (z 50), the announce bar inside it, the cart drawer Dialog,
- * and any page-level overlays. Portal mounts into <body> so the
- * positioning is viewport-relative. */
 .mobile-menu__backdrop {
-  position: fixed !important; inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s ease;
-  z-index: 9998;
-  isolation: isolate;
+  z-index: 60;
 }
 .mobile-menu__backdrop.is-open { opacity: 1; pointer-events: auto; }
 
 .mobile-menu {
-  position: fixed !important; top: 0 !important; bottom: 0 !important; left: 0 !important;
+  position: fixed; top: 0; bottom: 0; left: 0;
   width: min(360px, 88vw);
   background: rgba(7,7,10,0.96);
   backdrop-filter: blur(18px) saturate(160%);
@@ -446,8 +446,7 @@ body::after {
   border-right: 1px solid var(--line-2);
   transform: translateX(-100%);
   transition: transform .3s cubic-bezier(.2,.7,.2,1);
-  z-index: 9999;
-  isolation: isolate;
+  z-index: 70;
   display: flex; flex-direction: column;
   padding: 24px 28px 32px;
   overflow-y: auto;

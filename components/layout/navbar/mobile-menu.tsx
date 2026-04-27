@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const NAV = [
-  { label: 'Home',     zh: '家', href: '/' },
-  { label: 'Shop',     zh: '店', href: '/search' },
-  { label: 'Lookbook', zh: '册', href: '/lookbook' },
-  { label: 'Studio',   zh: '说', href: '/about' },
+  { label: "Home", zh: "家", href: "/" },
+  { label: "Shop", zh: "店", href: "/search" },
+  { label: "Lookbook", zh: "册", href: "/lookbook" },
+  { label: "Studio", zh: "说", href: "/about" },
 ];
 
 const AUX = [
-  { label: 'Search',  hint: '⌕',    href: '/search' },
-  { label: 'Account', hint: '⊙',    href: '/account' },
+  { label: "Search", hint: "⌕", href: "/search" },
+  { label: "Account", hint: "⊙", href: "/account" },
 ];
 
 export function MobileMenu() {
@@ -22,34 +22,44 @@ export function MobileMenu() {
   const pathname = usePathname();
 
   /* Close on route change */
-  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   /* Close on Escape */
   useEffect(() => {
     if (!open) return;
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setOpen(false); }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
   /* Lock body scroll while open */
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [open]);
 
   /* Auto-close if the viewport grows past the mobile breakpoint */
   useEffect(() => {
-    function onResize() { if (window.innerWidth > 768) setOpen(false); }
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    function onResize() {
+      if (window.innerWidth > 768) setOpen(false);
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   /* Portal target — wait until the client mounts so SSR doesn't touch document */
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /* Drawer + backdrop, rendered into <body> via portal so they escape the
    * navbar's stacking + containing block (the nav has backdrop-filter, which
@@ -58,18 +68,25 @@ export function MobileMenu() {
   const drawer = (
     <>
       <div
-        className={`mobile-menu__backdrop${open ? ' is-open' : ''}`}
+        className={`mobile-menu__backdrop${open ? " is-open" : ""}`}
         onClick={() => setOpen(false)}
         aria-hidden
       />
       <aside
-        className={`mobile-menu${open ? ' is-open' : ''}`}
+        className={`mobile-menu${open ? " is-open" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
       >
         <div className="mobile-menu__head">
-          <div className="mono up" style={{ fontSize: 10, color: 'var(--cinnabar)', letterSpacing: '0.22em' }}>
+          <div
+            className="mono up"
+            style={{
+              fontSize: 10,
+              color: "var(--cinnabar)",
+              letterSpacing: "0.22em",
+            }}
+          >
             § Index · 目录
           </div>
           <button
@@ -85,15 +102,15 @@ export function MobileMenu() {
           {NAV.map((item, i) => {
             const active =
               pathname === item.href ||
-              (item.href !== '/' && pathname.startsWith(item.href));
+              (item.href !== "/" && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`mobile-menu__link${active ? ' is-active' : ''}`}
+                className={`mobile-menu__link${active ? " is-active" : ""}`}
               >
                 <span className="mobile-menu__link-num">
-                  {String(i + 1).padStart(2, '0')}
+                  {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="mobile-menu__link-label">{item.label}</span>
                 <span className="mobile-menu__link-zh">{item.zh}</span>
@@ -104,19 +121,41 @@ export function MobileMenu() {
 
         <div className="mobile-menu__aux">
           {AUX.map((item) => (
-            <Link key={item.href} href={item.href} className="mobile-menu__aux-link">
-              <span style={{ color: 'var(--cinnabar)', marginRight: 8 }}>{item.hint}</span>
+            <Link
+              key={item.href}
+              href={item.href}
+              className="mobile-menu__aux-link"
+            >
+              <span style={{ color: "var(--cinnabar)", marginRight: 8 }}>
+                {item.hint}
+              </span>
               {item.label}
             </Link>
           ))}
         </div>
 
         <div className="mobile-menu__foot">
-          <div style={{ fontFamily: 'Noto Serif SC, serif', fontSize: 44, color: 'var(--cinnabar)', opacity: 0.22, lineHeight: 1 }}>
+          <div
+            style={{
+              fontFamily: "Noto Serif SC, serif",
+              fontSize: 44,
+              color: "var(--cinnabar)",
+              opacity: 0.22,
+              lineHeight: 1,
+            }}
+          >
             刻瓷
           </div>
-          <div className="mono up" style={{ fontSize: 9.5, color: 'var(--fg-4)', letterSpacing: '0.22em', marginTop: 10 }}>
-            Brooklyn · NY · S1 · One-of-one
+          <div
+            className="mono up"
+            style={{
+              fontSize: 9.5,
+              color: "var(--fg-4)",
+              letterSpacing: "0.22em",
+              marginTop: 10,
+            }}
+          >
+            Philadelphia · PA · S1 · Summer 2026
           </div>
         </div>
       </aside>
@@ -130,7 +169,9 @@ export function MobileMenu() {
         aria-label="Open menu"
         className="nav__hamburger"
       >
-        <span /><span /><span />
+        <span />
+        <span />
+        <span />
       </button>
       {mounted && createPortal(drawer, document.body)}
     </>

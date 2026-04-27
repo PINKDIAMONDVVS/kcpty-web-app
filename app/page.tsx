@@ -89,7 +89,7 @@ const aggregateMaterials = (products: Product[]) =>
 export const metadata = {
   title: "KPCTY — Wishes, Cut in Stone",
   description:
-    "Twenty-nine one-of-one bracelets, cut from eight named mountains and rung with meaning.",
+    "Spiritual gemstone bracelets, cut from eight named mountains and rung with meaning.",
   openGraph: { type: "website" },
 };
 
@@ -189,9 +189,9 @@ export default async function HomePage() {
                     maxWidth: 520,
                   }}
                 >
-                  Twenty-nine one-of-one bracelets, cut from eight named
-                  mountains and rung with meaning. Each is a small wish you can
-                  wear on your wrist — the way your 奶奶 might have wanted.
+                  Spiritual gemstone bracelets, cut from eight named mountains
+                  and rung with meaning. Each is a small wish you can wear on
+                  your wrist.
                 </p>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default async function HomePage() {
               <Link href="/about" className="btn btn--ghost">
                 Read the manifesto
               </Link>
-              <span
+              {/* <span
                 className="mono"
                 style={{
                   marginLeft: 8,
@@ -221,7 +221,7 @@ export default async function HomePage() {
                 }}
               >
                 29 objects · 8 wishes · 1-of-1
-              </span>
+              </span> */}
             </div>
           </div>
 
@@ -334,11 +334,11 @@ export default async function HomePage() {
 
         {/* Quote rail */}
         <div className="hero__featured-rail">
-          <div className="label">… 奶奶's maxim</div>
+          <div className="label">… Grandma's maxim</div>
           <div className="quote">
             "A small stone on the wrist keeps a large wish in the heart."
           </div>
-          <div className="meta">Season One · 29 / 29</div>
+          <div className="meta">Season One · Summer 2026</div>
         </div>
 
         {/* Ticker */}
@@ -348,14 +348,14 @@ export default async function HomePage() {
               <strong></strong> · KPCTY
             </span>
             <span>
-              <strong>韩巷</strong> · BROOKLYN
+              <strong>韩巷</strong> · Philadelphia
             </span>
             <span>
               <strong>SIG.</strong> 0x9F·KPC·S1
             </span>
           </div>
           <div style={{ textAlign: "center" }}>
-            ONE-OF-ONE · CERTIFIED · ETHICALLY SOURCED · CORD-STRUNG BY HAND
+            CERTIFIED · ETHICALLY SOURCED · HAND-MADE
           </div>
           <div style={{ textAlign: "right" }}>↓ SCROLL TO INDEX</div>
         </div>
@@ -406,10 +406,9 @@ export default async function HomePage() {
                 className="serif"
                 style={{ fontSize: 18, lineHeight: 1.4, color: "var(--fg-2)" }}
               >
-                Our 29 pieces are sorted by intention, not trend. Pick one for
-                the mood you&apos;re in, the friend you want to be, or the
-                season of your life. Wear it like a reminder note you don&apos;t
-                have to read.
+                Our bracelets are sorted by intention. Pick one for the mood
+                you&apos;re in, the friend you want to be, or the season of your
+                life. Wear it like a reminder note you don&apos;t have to read.
               </p>
             </div>
           </div>
@@ -539,12 +538,12 @@ export default async function HomePage() {
           <div className="sec-head">
             <div className="sec-head__num">§ 03 / SEASON ONE</div>
             <h2 className="sec-head__title">
-              The Drop —{" "}
+              New Arrivals —{" "}
               <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
-                一新
+                新品
               </em>
             </h2>
-            <div className="sec-head__meta">
+            {/* <div className="sec-head__meta">
               {shopifyProducts.length} PIECE
               {shopifyProducts.length === 1 ? "" : "S"}
               {latestUpdateLabel && (
@@ -553,7 +552,7 @@ export default async function HomePage() {
                   LAST UPDATED {latestUpdateLabel}
                 </>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="season-grid">
@@ -748,8 +747,8 @@ export default async function HomePage() {
                 color: "var(--fg)",
               }}
             >
-              It's the first jewelry brand that makes my mom text me{" "}
-              <em style={{ color: "var(--cinnabar)" }}>first</em>.
+              Quiet, beautiful, and weightier than it looks — 
+              <em style={{ color: "var(--cinnabar)" }}> in every sense</em>.
             </p>
             <div
               className="mono up"
@@ -762,7 +761,7 @@ export default async function HomePage() {
             className="vert-zh serif-sc press-quote__side"
             style={{ fontSize: 26, color: "var(--cinnabar)", opacity: 0.5 }}
           >
-            语语
+            评语
           </div>
         </div>
       </section>
