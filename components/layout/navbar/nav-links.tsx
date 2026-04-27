@@ -8,6 +8,7 @@ const NAV = [
   { label: 'Shop',     zh: '店', href: '/search' },
   { label: 'Lookbook', zh: '册', href: '/lookbook' },
   { label: 'Studio',   zh: '说', href: '/about' },
+  { label: 'Contact',  zh: '联', href: '/contact' },
 ];
 
 export function NavLinks() {

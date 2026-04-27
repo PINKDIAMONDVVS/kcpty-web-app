@@ -53,12 +53,10 @@ async function getFooterFacets() {
 }
 
 const STUDIO_LINKS = [
+  { label: "Shop", href: "/search" },
   { label: "About", href: "/about" },
-  { label: "Our makers", href: "/about#makers" },
-  { label: "Journal", href: "/lookbook" },
-  { label: "Repairs", href: "/about#repairs" },
-  { label: "Wholesale", href: "mailto:wholesale@kpcty.com" },
-  { label: "Press kit", href: "/about#press" },
+  { label: "Lookbook", href: "/lookbook" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const POLICY_LINKS = [
@@ -67,7 +65,7 @@ const POLICY_LINKS = [
   { label: "Warranty (forever)", href: "/about#warranty" },
   { label: "Care · 养", href: "/about#care" },
   { label: "FAQ", href: "/about#faq" },
-  { label: "Contact", href: "mailto:hello@kpcty.com" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const SOCIALS = [
@@ -127,7 +125,7 @@ export default async function Footer() {
                   maxWidth: "38ch",
                 }}
               >
-                Spiritual ancient-stone jewelry, re-strung in Philadelphia. 
+                Spiritual ancient-stone jewelry, re-strung in Philadelphia.
               </p>
               <div className="foot__socials" style={{ marginTop: 22 }}>
                 {SOCIALS.map((s, i) => (
