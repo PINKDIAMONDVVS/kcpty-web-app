@@ -904,6 +904,105 @@ body::after {
 .pdp__main img { width: 100%; height: 100%; object-fit: cover; }
 .pdp__info { padding: 56px; background: var(--bg); max-width: 720px; overflow-y: auto; }
 
+/* ── PDP corner seal overlay (on the main image) ── */
+.pdp__seal-overlay {
+  position: absolute;
+  bottom: 28px; left: 28px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  pointer-events: none;
+  max-width: calc(100% - 56px);
+}
+.pdp__seal-stamp {
+  width: 90px; height: 90px;
+  background: var(--cinnabar);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+  font-size: 54px;
+  transform: rotate(-4deg);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+.pdp__seal-title { color: var(--fg); margin-bottom: 6px; min-width: 0; overflow: hidden; }
+.pdp__seal-kicker { font-size: 10px; letter-spacing: 0.18em; opacity: 0.8; }
+.pdp__seal-name {
+  font-size: 22px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+}
+
+/* ── PDP intent card ── */
+.pdp__intent-card {
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+}
+.pdp__intent-seal {
+  width: 72px; height: 72px;
+  background: var(--cinnabar);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.pdp__intent-body { min-width: 0; }
+.pdp__intent-kicker { font-size: 10px; opacity: 0.55; letter-spacing: 0.16em; }
+.pdp__intent-line { font-size: 20px; line-height: 1.2; margin: 4px 0 8px; }
+.pdp__intent-quote { font-size: 14px; font-style: italic; line-height: 1.35; opacity: 0.8; }
+
+/* ── PDP price row ── */
+.pdp__price-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+  gap: 16px;
+}
+.pdp__price-ships {
+  font-size: 11px;
+  text-align: right;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+/* ── PDP certificate ── */
+.pdp__cert {
+  margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+}
+.pdp__cert-seal {
+  width: 48px; height: 48px;
+  background: var(--cinnabar);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Noto Serif SC";
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.pdp__cert-body { font-size: 11px; line-height: 1.5; min-width: 0; }
+
 /* ---- PDP care section ---- */
 .pdp-care { display: grid; grid-template-columns: auto 1fr; gap: 60px; align-items: center; }
 .pdp-care-tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 32px; }
@@ -1871,7 +1970,29 @@ body::after {
   .hero__readout    { flex-wrap: wrap; gap: 12px; }
   .hero__grid       { grid-template-columns: 1fr; }
   .pdp              { grid-template-columns: 1fr; }
-  .pdp__media       { position: relative; top: 0; height: 90vh; }
+  /* Stack media: main image on top, thumbnails as a horizontal scroll
+   * strip below. Avoids the cramped 64px left rail on phones. */
+  .pdp__media       {
+    position: relative;
+    top: 0;
+    grid-template-columns: 1fr;
+    grid-template-areas: "main" "thumbs";
+    height: auto;
+    border-right: none;
+  }
+  .pdp__main        { grid-area: main; aspect-ratio: 1; max-height: 70vh; }
+  .pdp__thumbs      {
+    grid-area: thumbs;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 12px 16px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp__thumb       { width: 64px; height: 64px; flex-shrink: 0; }
   .pdp__info        { padding: 36px 32px; max-width: 100%; }
   .pdp-care         { grid-template-columns: 1fr; gap: 32px; }
   .pdp-care__zh     { writing-mode: horizontal-tb; font-size: 40px !important; }
@@ -1958,11 +2079,42 @@ body::after {
   .cart-panel ul { padding: 0 16px !important; }
 }
 
-/* ─── PDP media / corner seal shrink on mobile ─── */
+/* ─── PDP — small phone tightening ─── */
 @media (max-width: 768px) {
-  .pdp__media { grid-template-columns: 64px 1fr; height: auto; min-height: 60vh; }
-  .pdp__thumbs { padding: 10px 6px; }
-  .pdp__thumb { max-width: 52px; }
+  /* Tighter info-panel padding */
+  .pdp__info        { padding: 24px 20px; }
+
+  /* Title + story scale down */
+  .pdp__info > h1.display { font-size: clamp(32px, 8vw, 56px) !important; }
+
+  /* Corner seal smaller and tighter against the image edge */
+  .pdp__seal-overlay { bottom: 14px; left: 14px; gap: 10px; max-width: calc(100% - 28px); }
+  .pdp__seal-stamp   { width: 60px; height: 60px; font-size: 36px; box-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
+  .pdp__seal-name    { font-size: 16px; }
+  .pdp__seal-kicker  { font-size: 9.5px; }
+
+  /* Intent card — smaller seal, tighter padding */
+  .pdp__intent-card { padding: 14px 16px; gap: 14px; margin-bottom: 20px; }
+  .pdp__intent-seal { width: 56px; height: 56px; font-size: 32px; }
+  .pdp__intent-line { font-size: 18px; }
+
+  /* Price + ships stack vertically so neither gets squeezed */
+  .pdp__price-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .pdp__price-ships { text-align: left; }
+
+  /* Certificate compact */
+  .pdp__cert-seal { width: 42px; height: 42px; font-size: 18px; }
+
+  /* Thumbnail strip tighter */
+  .pdp__thumbs { padding: 10px 14px; }
+  .pdp__thumb  { width: 56px; height: 56px; }
+
+  /* Main image: cap height so it doesn't dominate the page */
+  .pdp__main { aspect-ratio: 1; max-height: 60vh; }
 }
 
 /* ─── Marquee — tighter gap on narrow screens ─── */

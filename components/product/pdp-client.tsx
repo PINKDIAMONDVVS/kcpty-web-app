@@ -136,53 +136,17 @@ export function PdpClient({
             )}
 
             {/* Corner seal */}
-            <div
-              className="abs"
-              style={{
-                bottom: 28,
-                left: 28,
-                display: "flex",
-                gap: 14,
-                alignItems: "flex-end",
-                pointerEvents: "none",
-              }}
-            >
+            <div className="pdp__seal-overlay">
               {intentZh && (
-                <div
-                  style={{
-                    width: 90,
-                    height: 90,
-                    background: "var(--cinnabar)",
-                    color: "var(--fg)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontFamily: "Noto Serif SC, serif",
-                    fontWeight: 700,
-                    fontSize: 54,
-                    transform: "rotate(-4deg)",
-                    boxShadow: "3px 3px 0 rgba(0,0,0,0.3)",
-                  }}
-                >
-                  {intentZh}
-                </div>
+                <div className="pdp__seal-stamp">{intentZh}</div>
               )}
-              <div style={{ color: "var(--fg)", marginBottom: 6 }}>
+              <div className="pdp__seal-title">
                 {primaryIntent && (
-                  <div
-                    className="mono"
-                    style={{
-                      fontSize: 10,
-                      letterSpacing: "0.18em",
-                      opacity: 0.8,
-                    }}
-                  >
+                  <div className="mono pdp__seal-kicker">
                     Season One · {primaryIntent}
                   </div>
                 )}
-                <div className="serif" style={{ fontSize: 22, marginTop: 2 }}>
-                  {product.title}
-                </div>
+                <div className="serif pdp__seal-name">{product.title}</div>
               </div>
             </div>
 
@@ -234,63 +198,18 @@ export function PdpClient({
 
           {/* Intent card */}
           {primaryIntent && (
-            <div
-              style={{
-                border: "1px solid var(--line)",
-                background: "var(--bg-2)",
-                padding: "18px 20px",
-                marginBottom: 24,
-                display: "grid",
-                gridTemplateColumns: "auto 1fr",
-                gap: 18,
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: 72,
-                  height: 72,
-                  background: "var(--cinnabar)",
-                  color: "var(--fg)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontFamily: "Noto Serif SC, serif",
-                  fontWeight: 700,
-                  fontSize: 42,
-                  lineHeight: 1,
-                }}
-              >
-                {intentZh}
-              </div>
-              <div>
-                <div
-                  className="mono up"
-                  style={{
-                    fontSize: 10,
-                    opacity: 0.55,
-                    letterSpacing: "0.16em",
-                  }}
-                >
+            <div className="pdp__intent-card">
+              <div className="pdp__intent-seal">{intentZh}</div>
+              <div className="pdp__intent-body">
+                <div className="mono up pdp__intent-kicker">
                   Wish · 心愿 · {primaryIntent}
                 </div>
-                <div
-                  className="serif"
-                  style={{ fontSize: 20, lineHeight: 1.2, margin: "4px 0 8px" }}
-                >
+                <div className="serif pdp__intent-line">
                   Carry this for{" "}
                   <em style={{ color: "var(--cinnabar)" }}>{primaryIntent}</em>.
                 </div>
                 {product.description && (
-                  <div
-                    className="serif"
-                    style={{
-                      fontSize: 14,
-                      fontStyle: "italic",
-                      lineHeight: 1.35,
-                      opacity: 0.8,
-                    }}
-                  >
+                  <div className="serif pdp__intent-quote">
                     "{product.description.slice(0, 110)}
                     {product.description.length > 110 ? "…" : ""}"
                   </div>
@@ -347,16 +266,7 @@ export function PdpClient({
           )}
 
           {/* Price */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "space-between",
-              paddingBottom: 24,
-              borderBottom: "1px solid var(--line)",
-              marginBottom: 28,
-            }}
-          >
+          <div className="pdp__price-row">
             <div>
               <div
                 className="mono up"
@@ -377,16 +287,7 @@ export function PdpClient({
                 </span>
               </div>
             </div>
-            <div
-              className="mono"
-              style={{
-                fontSize: 11,
-                textAlign: "right",
-                opacity: 0.7,
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-              }}
-            >
+            <div className="mono pdp__price-ships">
               Ships in 3–5 days
               <br />
               From Philadelphia, NY
@@ -455,33 +356,9 @@ export function PdpClient({
           </div>
 
           {/* Certificate */}
-          <div
-            className="label-box"
-            style={{
-              marginBottom: 28,
-              display: "grid",
-              gridTemplateColumns: "auto 1fr",
-              gap: 16,
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                background: "var(--cinnabar)",
-                color: "var(--fg)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "Noto Serif SC",
-                fontSize: 20,
-                fontWeight: 700,
-              }}
-            >
-              证
-            </div>
-            <div style={{ fontSize: 11, lineHeight: 1.5 }}>
+          <div className="label-box pdp__cert">
+            <div className="pdp__cert-seal">证</div>
+            <div className="pdp__cert-body">
               <strong>CERTIFICATE OF NATURAL ORIGIN</strong>
               <br />
               Each piece ships with a handwritten letter naming the specific
@@ -641,7 +518,7 @@ export function PdpClient({
             <h2 className="display sec-head__title">
               Other pieces —{" "}
               <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
-                款
+                推荐
               </em>
             </h2>
             <div className="sec-head__meta">FROM THE SAME HANDS</div>
