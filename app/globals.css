@@ -1608,7 +1608,12 @@ body::after {
   gap: 12px;
   position: sticky;
   top: 0;
-  z-index: 40;
+  /* Must clear the dropdown backdrop (mobile z 55).
+   * Sticky positioning creates a stacking context, so the filter bar
+   * itself becomes a containing layer for the dropdown panel inside.
+   * If this z-index sits below the backdrop, the panel is trapped
+   * underneath the scrim — see .shop-drop-backdrop. */
+  z-index: 60;
   background: var(--bg-1);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -1678,12 +1683,14 @@ body::after {
   z-index: 30;
 }
 @media (max-width: 768px) {
-  /* Darker scrim on mobile so the bottom sheet has visual focus */
+  /* Darker scrim on mobile so the bottom sheet has visual focus.
+   * z-index sits *below* .shop-filter-bar (z 60) — the bar's stacking
+   * context contains the dropdown panel, and we need it above the scrim. */
   .shop-drop-backdrop {
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    z-index: 55;
+    z-index: 50;
   }
 }
 

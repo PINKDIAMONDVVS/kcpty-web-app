@@ -1,38 +1,23 @@
 "use client";
 
+import { getIntentZh as resolveProductIntentZh, parseList, resolveIntent } from "lib/intents";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-/* ── Helpers ── */
-function parseList(value: string | null | undefined): string[] {
-  if (!value) return [];
-  try {
-    return JSON.parse(value) as string[];
-  } catch {
-    return [];
-  }
+/* Resolve a single Chinese seal char for an intent value. Uses the fuzzy
+ * lookup from lib/intents (exact → word-by-word → substring), so values
+ * like "Heritage & Craft" / "Healing & Renewal" / "Mental Clarity" all
+ * resolve via their root word ("heritage", "healing", "clarity"). */
+function intentZh(key: string): string {
+  return resolveIntent(key).zh;
 }
 
-const INTENT_ZH: Record<string, string> = {
-  luck: "福",
-  love: "爱",
-  calm: "静",
-  courage: "勇",
-  wealth: "财",
-  wisdom: "慧",
-  protection: "护",
-  wish: "愿",
-};
-
+/* Pull the first matching zh char from a product's intents list. */
 function getIntentZh(p: Product): string {
-  for (const k of parseList(p.intents?.value)) {
-    const zh = INTENT_ZH[k.toLowerCase()];
-    if (zh) return zh;
-  }
-  return "";
+  return resolveProductIntentZh(parseList(p.intents?.value));
 }
 
 function fmt(amount: string, code: string) {
@@ -268,7 +253,7 @@ export function ShopClient({ products }: { products: Product[] }) {
                       }}
                       count={cntIntent(key)}
                     >
-                      {INTENT_ZH[key.toLowerCase()] && (
+                      {intentZh(key) && (
                         <span
                           style={{
                             fontFamily: "Noto Serif SC, serif",
@@ -281,7 +266,7 @@ export function ShopClient({ products }: { products: Product[] }) {
                             lineHeight: 1,
                           }}
                         >
-                          {INTENT_ZH[key.toLowerCase()]}
+                          {intentZh(key)}
                         </span>
                       )}
                       {key}
