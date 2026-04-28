@@ -60,12 +60,7 @@ const STUDIO_LINKS = [
 ];
 
 const POLICY_LINKS = [
-  { label: "Shipping", href: "/about#shipping" },
-  { label: "Returns", href: "/about#returns" },
-  { label: "Warranty (forever)", href: "/about#warranty" },
-  { label: "Care · 养", href: "/about#care" },
-  { label: "FAQ", href: "/about#faq" },
-  { label: "Contact", href: "/contact" },
+  { label: "Terms & Policies", href: "/policies" },
 ];
 
 const SOCIALS = [

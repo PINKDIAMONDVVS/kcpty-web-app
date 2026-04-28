@@ -62,6 +62,12 @@ a, input, button {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--bg); color: var(--fg); }
 
+/* Anchor jumps clear the sticky announce + nav header.
+ * Desktop ≈ announce(35) + nav(56) = 91px; mobile gets bumped up
+ * because the policies page also stacks a sticky chip-TOC under the nav. */
+html { scroll-padding-top: 110px; scroll-behavior: smooth; }
+@media (max-width: 1024px) { html { scroll-padding-top: 140px; } }
+
 body {
   font-family: "JetBrains Mono","IBM Plex Mono", ui-monospace, monospace;
   font-feature-settings: "ss01","zero","cv11";
@@ -994,6 +1000,359 @@ body::after {
 .contact-faq__item { padding: 28px 0; border-bottom: 1px solid var(--line); }
 .contact-faq__item:nth-child(odd)  { padding-right: 32px; border-right: 1px solid var(--line); }
 .contact-faq__item:nth-child(even) { padding-left: 32px; }
+
+/* ════════════════════════════════════════
+   Policies page · clean editorial system
+   ════════════════════════════════════════ */
+
+/* ── Header ── */
+.pol-head {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  align-items: end;
+  padding: 64px 0 40px;
+  border-bottom: 1px solid var(--line);
+}
+.pol-kicker {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: var(--fg-3);
+}
+.pol-title {
+  font-size: clamp(56px, 9vw, 160px);
+  margin-top: 16px;
+  line-height: 0.9;
+}
+.pol-head__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+}
+.pol-head__intro {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  max-width: 44ch;
+}
+.pol-head__intro a { color: var(--cinnabar); text-decoration: none; }
+.pol-head__intro a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.pol-head__updated {
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: var(--fg-3);
+}
+
+/* ── Body grid: TOC + content ── */
+.pol-body {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 80px;
+  padding: 56px 0 120px;
+  align-items: start;
+}
+
+/* ── Sticky TOC (left rail on desktop) ── */
+.pol-toc {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+  border-left: 1px solid var(--line);
+  padding-left: 16px;
+}
+.pol-toc__title {
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  color: var(--cinnabar);
+  margin-bottom: 14px;
+}
+.pol-toc__nav { display: flex; flex-direction: column; }
+.pol-toc__link {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 11px 4px 11px 0;
+  text-decoration: none;
+  color: var(--fg-3);
+  border-bottom: 1px dashed var(--line);
+  transition: color .15s, padding-left .2s;
+}
+.pol-toc__link:last-child { border-bottom: none; }
+.pol-toc__link:hover {
+  color: var(--cinnabar);
+  padding-left: 6px;
+}
+.pol-toc__num {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--fg-4);
+}
+.pol-toc__link:hover .pol-toc__num { color: var(--cinnabar); }
+.pol-toc__label {
+  font-family: "Fraunces", "Cormorant Garamond", serif;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  color: inherit;
+}
+.pol-toc__zh {
+  font-family: "Noto Serif SC", serif;
+  font-size: 14px;
+  color: var(--cinnabar);
+  letter-spacing: 0.08em;
+  opacity: 0.55;
+}
+
+/* ── Content sections ── */
+.pol-content { min-width: 0; }
+.pol-section {
+  padding: 0 0 56px;
+  margin-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+}
+.pol-section:first-of-type { padding-top: 8px; }
+.pol-section:last-of-type  { border-bottom: none; margin-bottom: 0; }
+
+/* ── Section head ── */
+.pol-section__head { margin-bottom: 28px; }
+.pol-section__num {
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  color: var(--cinnabar);
+  margin-bottom: 14px;
+}
+.pol-section__title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+.pol-section__title {
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+.pol-section__zh {
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 600;
+  color: var(--cinnabar);
+  opacity: 0.32;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.pol-section__lead {
+  font-size: 20px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--fg-2);
+  margin-top: 16px;
+  max-width: 56ch;
+}
+
+/* ── Section body wrapper ── */
+.pol-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Facts (KV table) ── */
+.pol-facts {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 4px 0;
+  margin: 0;
+}
+.pol-fact {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 24px;
+  padding: 11px 0;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--line);
+}
+.pol-fact:last-child { border-bottom: none; }
+.pol-fact dt {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  margin: 0;
+}
+.pol-fact dd {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: var(--fg);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* ── Prose ── */
+.pol-prose {
+  font-family: "Fraunces", "Cormorant Garamond", serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--fg-2);
+  max-width: 64ch;
+  margin: 0;
+}
+.pol-prose strong { color: var(--fg); font-weight: 500; }
+.pol-prose a {
+  color: var(--cinnabar);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.pol-prose a:hover { text-decoration-thickness: 2px; }
+
+/* ── List ── */
+.pol-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pol-list li {
+  font-family: "Fraunces", "Cormorant Garamond", serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  padding-left: 28px;
+  position: relative;
+  max-width: 64ch;
+}
+.pol-list li::before {
+  content: "⦿";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  color: var(--cinnabar);
+  font-size: 11px;
+}
+.pol-list li strong {
+  color: var(--fg);
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+/* ── Callout (final-sale style note) ── */
+.pol-callout {
+  padding: 16px 20px;
+  border: 1px dashed var(--cinnabar);
+  background: var(--bg-1);
+  max-width: 64ch;
+  margin-top: 4px;
+}
+.pol-callout__kicker {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--cinnabar);
+}
+.pol-callout__text {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--fg-2);
+  line-height: 1.55;
+}
+
+/* ── Closing ── */
+.pol-closing {
+  padding: 64px 0 0;
+  text-align: center;
+}
+.pol-closing__zh {
+  font-size: 22px;
+  color: var(--cinnabar);
+  letter-spacing: 0.3em;
+  margin-bottom: 14px;
+}
+.pol-closing__line {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  max-width: 48ch;
+  margin: 0 auto 28px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .pol-head {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 40px 0 32px;
+  }
+  .pol-body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 0 80px;
+  }
+
+  /* TOC becomes a horizontal sticky chip strip below the navbar */
+  .pol-toc {
+    position: sticky;
+    top: 70px;
+    margin: 0 -20px;
+    padding: 12px 20px;
+    background: rgba(7,7,10,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-left: none;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    z-index: 5;
+  }
+  .pol-toc__title { display: none; }
+  .pol-toc__nav {
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 6px;
+  }
+  .pol-toc__nav::-webkit-scrollbar { display: none; }
+  .pol-toc__link {
+    grid-template-columns: auto auto;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .pol-toc__link:hover {
+    padding-left: 14px;
+    border-color: var(--cinnabar);
+  }
+  .pol-toc__zh { display: none; }
+  .pol-toc__label { font-size: 14px; }
+  .pol-toc__num   { font-size: 9.5px; }
+
+  .pol-section            { padding: 0 0 40px; margin-bottom: 40px; }
+  .pol-section__head      { margin-bottom: 22px; }
+  .pol-section__title-row { flex-direction: row-reverse; justify-content: flex-end; }
+  .pol-section__zh        { font-size: 36px; opacity: 0.4; }
+  .pol-section__lead      { font-size: 18px; }
+}
+
+@media (max-width: 768px) {
+  .pol-fact {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 12px 0;
+  }
+  .pol-prose, .pol-list li { font-size: 16px; line-height: 1.65; }
+  .pol-callout { padding: 14px 16px; }
+  .pol-closing { padding: 48px 0 0; }
+}
 
 /* ---- About / story ---- */
 .story-grid { display: grid; grid-template-columns: 1fr 1fr; }

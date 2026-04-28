@@ -53,8 +53,8 @@ const PRINCIPLES = [
   {
     n: "三",
     p: "SĀN · THREE",
-    t: "Repair is forever.",
-    d: "Bring your KPCTY back — any season, any year — and we re-cord it for free. A cheap thread would be the whole brand's problem.",
+    t: "Built to be re-strung.",
+    d: "Silk stretches with wear — that's the material being honest. Bring your KPCTY back any season and we'll re-cord it as a paid service. A cheap thread would be the whole brand's problem.",
   },
 ];
 

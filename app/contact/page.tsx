@@ -46,7 +46,7 @@ const FAQ = [
   },
   {
     q: "Care & repair?",
-    a: "Avoid lotion, hot tubs, and gym chalk. If the cord ever frays, mail it back — we re-string for free, forever.",
+    a: "Avoid lotion, hot tubs, and gym chalk. If the cord frays, get in touch — we offer paid re-stringing. See our care policy for the full guide.",
   },
   {
     q: "Wholesale or stockists?",

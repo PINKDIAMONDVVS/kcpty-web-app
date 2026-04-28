@@ -600,7 +600,7 @@ export function PdpClient({
                 {
                   n: "03",
                   t: "Re-knot annually",
-                  d: "Silk stretches with a year of wear. We re-cord free, forever.",
+                  d: "Silk stretches with a year of wear. Re-cording is offered as a paid service.",
                 },
               ].map((c) => (
                 <div key={c.n}>
