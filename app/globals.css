@@ -1060,6 +1060,7 @@ body::after {
   align-self: start;
   border-left: 1px solid var(--line);
   padding-left: 16px;
+  overflow: hidden;
 }
 .pol-toc__title {
   font-size: 10.5px;
@@ -1513,8 +1514,220 @@ body::after {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
-.shop-filter-left  { display: flex; gap: 8px; align-items: center; }
+.shop-filter-left  { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; min-width: 0; }
 .shop-filter-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+/* ── Filter dropdown trigger button ── */
+.shop-drop-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  background: transparent;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s, color .15s;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 36px;
+}
+.shop-drop-trigger__label { color: var(--fg-4); font-size: 9px; flex-shrink: 0; }
+.shop-drop-trigger__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 18ch;
+}
+.shop-drop-trigger__clear {
+  margin-left: 2px;
+  color: var(--cinnabar);
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+.shop-drop-trigger__caret {
+  color: var(--fg-4);
+  font-size: 8px;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Filter dropdown panel ── */
+.shop-drop-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--bg-1);
+  border: 1px solid var(--line-2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 50;
+  overflow: hidden;
+  max-width: calc(100vw - 24px);
+}
+
+/* ── Click-out backdrop ── */
+.shop-drop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+}
+@media (max-width: 768px) {
+  /* Darker scrim on mobile so the bottom sheet has visual focus */
+  .shop-drop-backdrop {
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 55;
+  }
+}
+
+/* ── Option grids inside panels ── */
+.shop-drop-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  margin-top: 1px;
+}
+.shop-drop-grid--intent   { grid-template-columns: 1fr 1fr; }
+.shop-drop-grid--material { grid-template-columns: repeat(3, 1fr); }
+
+/* ── Option button ── */
+.shop-drop-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  color: var(--fg-2);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background .12s, color .12s;
+  min-width: 0;
+  min-height: 44px;
+}
+.shop-drop-option:hover { background: var(--bg-3); color: var(--fg); }
+.shop-drop-option.is-selected,
+.shop-drop-option.is-selected:hover {
+  background: var(--cinnabar);
+  color: var(--fg);
+}
+.shop-drop-option__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+.shop-drop-option__count {
+  margin-left: auto;
+  padding-left: 8px;
+  opacity: 0.45;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+/* ── Mobile (≤ 768px) ── */
+@media (max-width: 768px) {
+  /* Filter bar — give the trigger row breathing room top + bottom */
+  .shop-filter-bar { padding: 14px 10px !important; gap: 10px; }
+  .shop-filter-left, .shop-filter-right { gap: 10px; }
+
+  /* Tap-friendly trigger — full-width on mobile, label/value flow
+   * from the left, caret pinned to the right (native-select feel). */
+  .shop-drop-trigger {
+    padding: 12px 14px;
+    min-height: 48px;
+    font-size: 10.5px;
+    width: 100%;
+    justify-content: flex-start;
+    background: var(--bg-2);
+    margin: 0px 0px;
+  }
+  .shop-drop-trigger__value {
+    max-width: none;
+    flex: 1;
+    min-width: 0;
+    text-align: right;
+  }
+  .shop-drop-trigger__caret,
+  .shop-drop-trigger__clear { margin-left: auto; }
+
+  /* Layout
+   * ──────
+   *   Intent          ← row 1, full width
+   *   Material        ← row 2, full width
+   *   ───
+   *   Sort   [⊞ ≡]    ← row 3, sort takes flex space, view toggle compact right
+   */
+  .shop-filter-left {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+  }
+  .shop-filter-left  > .shop-drop { width: 100%; }
+  .shop-filter-right {
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .shop-filter-right > .shop-drop { flex: 1 1 0; min-width: 0; }
+  .shop-filter-right > div:last-child { flex-shrink: 0; align-self: stretch; }
+
+  /* On mobile the panel becomes a true bottom sheet — fixed to the
+   * viewport with side gutters matching the container, max-height
+   * capped so it never blocks the trigger bar, internal scroll for
+   * long lists. */
+  .shop-drop { position: static !important; }
+  .shop-drop-panel {
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: 16px !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none;
+    max-height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Keep scroll inside the panel — don't chain to the page underneath */
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding: 8px 12px;
+    box-shadow: 0 -10px 36px rgba(0,0,0,0.45);
+    z-index: 60;
+  }
+
+  /* Option grids: collapse to fewer columns so labels fit comfortably */
+  .shop-drop-grid--intent   { grid-template-columns: 1fr; }
+  .shop-drop-grid--material { grid-template-columns: 1fr 1fr; }
+
+  /* Tap-friendly option buttons */
+  .shop-drop-option {
+    padding: 14px 18px;
+    font-size: 11px;
+    min-height: 52px;
+    letter-spacing: 0.12em;
+  }
+  .shop-drop-option__count { font-size: 10px; }
+}
+
+@media (max-width: 480px) {
+  /* On the smallest phones, even 2 columns can pinch material names. */
+  .shop-drop-grid--material { grid-template-columns: 1fr; }
+}
 
 .shop-grid {
   display: grid;

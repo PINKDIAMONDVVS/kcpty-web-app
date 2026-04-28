@@ -54,12 +54,12 @@ export default function PoliciesPage() {
         </section>
 
         {/* ── Body: TOC + sections ── */}
-        <section className="kpcty-container pol-body">
+        <section className="kpcty-container pol-body ">
 
           {/* TOC */}
           <aside className="pol-toc">
             <div className="mono up pol-toc__title">⦿ Index · 目录</div>
-            <nav className="pol-toc__nav">
+            <nav className="pol-toc__nav ">
               {TOC.map((s) => (
                 <a key={s.id} href={`#${s.id}`} className="pol-toc__link">
                   <span className="pol-toc__num">{s.num}</span>

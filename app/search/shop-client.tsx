@@ -57,6 +57,18 @@ function useDropdown() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  /* Lock body scroll while any dropdown is open. Critical on mobile —
+   * the panel becomes a bottom sheet with internal scroll, and we don't
+   * want swipes to bleed through to the page underneath. */
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   return { open, setOpen, ref };
 }
 
@@ -165,7 +177,7 @@ export function ShopClient({ products }: { products: Product[] }) {
       {open && (
         <div
           onClick={close}
-          style={{ position: "fixed", inset: 0, zIndex: 30 }}
+          className="shop-drop-backdrop"
           aria-hidden
         />
       )}
@@ -212,9 +224,9 @@ export function ShopClient({ products }: { products: Product[] }) {
       {/* ── Filter bar ── */}
       <div ref={barRef} className="kpcty-container shop-filter-bar">
         {/* Left: Intent + Material dropdowns */}
-        <div className="shop-filter-left">
+        <div className="shop-filter-left ">
           {/* Intent dropdown */}
-          <div style={{ position: "relative" }}>
+          <div className="shop-drop" style={{ position: "relative" }}>
             <DropTrigger
               label="Intent · 意"
               value={intentLabel}
@@ -244,16 +256,8 @@ export function ShopClient({ products }: { products: Product[] }) {
                 >
                   Any wish · 任意
                 </DropOption>
-                {/* 2-column grid of intents */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 1,
-                    background: "var(--line)",
-                    marginTop: 1,
-                  }}
-                >
+                {/* 2-column grid of intents (1-col on mobile via CSS) */}
+                <div className="shop-drop-grid shop-drop-grid--intent">
                   {allIntents.map((key) => (
                     <DropOption
                       key={key}
@@ -289,7 +293,7 @@ export function ShopClient({ products }: { products: Product[] }) {
           </div>
 
           {/* Material dropdown */}
-          <div style={{ position: "relative" }}>
+          <div className="shop-drop" style={{ position: "relative" }}>
             <DropTrigger
               label="Material · 料"
               value={materialLabel}
@@ -318,16 +322,8 @@ export function ShopClient({ products }: { products: Product[] }) {
                 >
                   All materials · 全部
                 </DropOption>
-                {/* auto-fill grid of material chips */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: 1,
-                    background: "var(--line)",
-                    marginTop: 1,
-                  }}
-                >
+                {/* 3-col grid of materials (collapses on mobile via CSS) */}
+                <div className="shop-drop-grid shop-drop-grid--material">
                   {allMaterials.map((mat) => (
                     <DropOption
                       key={mat}
@@ -364,7 +360,7 @@ export function ShopClient({ products }: { products: Product[] }) {
         {/* Right: Sort + View toggle */}
         <div className="shop-filter-right">
           {/* Sort dropdown */}
-          <div style={{ position: "relative" }}>
+          <div className="shop-drop" style={{ position: "relative" }}>
             <DropTrigger
               label="Sort"
               value={sortLabel}
@@ -406,7 +402,7 @@ export function ShopClient({ products }: { products: Product[] }) {
           </div>
 
           {/* Grid / List toggle */}
-          <div style={{ display: "flex", border: "1px solid var(--line-2)" }}>
+          {/* <div style={{ display: "flex", border: "1px solid var(--line-2)"}}>
             <ViewBtn active={view === "grid"} onClick={() => setView("grid")}>
               ⊞
             </ViewBtn>
@@ -417,7 +413,7 @@ export function ShopClient({ products }: { products: Product[] }) {
             >
               ≡
             </ViewBtn>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -712,25 +708,17 @@ function DropTrigger({
   return (
     <button
       onClick={onToggle}
+      className="shop-drop-trigger"
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 7,
-        padding: "8px 12px",
         border: `1px solid ${open || active ? "var(--cinnabar)" : "var(--line-2)"}`,
-        background: "transparent",
         color: active ? "var(--cinnabar)" : open ? "var(--fg)" : "var(--fg-3)",
-        fontFamily: "JetBrains Mono, monospace",
-        fontSize: 10,
-        letterSpacing: "0.16em",
-        textTransform: "uppercase",
-        cursor: "pointer",
-        whiteSpace: "nowrap",
-        transition: "border-color .15s, color .15s",
       }}
     >
-      <span style={{ color: "var(--fg-4)", fontSize: 9 }}>{label}</span>
-      <span style={{ color: active ? "var(--cinnabar)" : "var(--fg-2)" }}>
+      <span className="shop-drop-trigger__label">{label}</span>
+      <span
+        className="shop-drop-trigger__value"
+        style={{ color: active ? "var(--cinnabar)" : "var(--fg-2)" }}
+      >
         · {value}
       </span>
       {onClear ? (
@@ -739,21 +727,13 @@ function DropTrigger({
             e.stopPropagation();
             onClear();
           }}
-          style={{
-            marginLeft: 2,
-            color: "var(--cinnabar)",
-            fontSize: 13,
-            lineHeight: 1,
-            opacity: 0.7,
-          }}
+          className="shop-drop-trigger__clear"
           aria-label="Clear filter"
         >
           ×
         </span>
       ) : (
-        <span style={{ color: "var(--fg-4)", fontSize: 8, marginLeft: 2 }}>
-          {open ? "▲" : "▼"}
-        </span>
+        <span className="shop-drop-trigger__caret">{open ? "▲" : "▼"}</span>
       )}
     </button>
   );
@@ -768,20 +748,7 @@ function DropPanel({
   style?: React.CSSProperties;
 }) {
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "calc(100% + 4px)",
-        left: 0,
-        background: "var(--bg-1)",
-        border: "1px solid var(--line-2)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        zIndex: 50,
-        overflow: "hidden",
-        ...style,
-      }}
-    >
+    <div className="shop-drop-panel" style={style}>
       {children}
     </div>
   );
@@ -804,36 +771,11 @@ function DropOption({
   return (
     <button
       onClick={onClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        width: fullWidth ? "100%" : undefined,
-        padding: "10px 14px",
-        background: selected ? "var(--cinnabar)" : "var(--bg-2)",
-        color: selected ? "var(--fg)" : "var(--fg-2)",
-        border: "none",
-        cursor: "pointer",
-        textAlign: "left",
-        fontFamily: "JetBrains Mono, monospace",
-        fontSize: 10,
-        letterSpacing: "0.14em",
-        textTransform: "uppercase",
-        transition: "background .12s, color .12s",
-      }}
+      className={`shop-drop-option${selected ? " is-selected" : ""}${fullWidth ? " shop-drop-option--full" : ""}`}
     >
-      {children}
+      <span className="shop-drop-option__label">{children}</span>
       {count !== undefined && (
-        <span
-          style={{
-            marginLeft: "auto",
-            paddingLeft: 8,
-            opacity: 0.45,
-            fontSize: 9,
-          }}
-        >
-          [{count}]
-        </span>
+        <span className="shop-drop-option__count">[{count}]</span>
       )}
     </button>
   );
