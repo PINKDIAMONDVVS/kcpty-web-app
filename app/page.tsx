@@ -92,9 +92,11 @@ export const metadata = {
   openGraph: { type: "website" },
 };
 
-/* Render dynamically so the hero "Featured object" rotates between
- * Shopify products on every page load instead of being frozen at build. */
-export const dynamic = "force-dynamic";
+/* Re-render the home page once a minute so the hero "Featured object"
+ * rotates between Shopify products without forcing a full SSR per request.
+ * Pairs with the time-bucketed hero pick below — the rotation advances
+ * each time the cache revalidates rather than on every visit. */
+export const revalidate = 60;
 
 /* Build the hero spec card from a Shopify product. The original prototype
  * used a richer static record (name + zh + wish + stones + diameter +
@@ -137,12 +139,15 @@ export default async function HomePage() {
   const intents = aggregateIntents(shopifyProducts);
   const materials = aggregateMaterials(shopifyProducts);
 
-  /* Pick a random product as the featured hero piece — rotates on
-   * every server render thanks to `dynamic = "force-dynamic"` above. */
-  const heroProduct =
+  /* Pick the featured hero piece via a time-bucketed index so it rotates
+   * once per ISR window (see `revalidate` above) and stays stable inside
+   * each cache slice — every visitor in the same minute sees the same
+   * piece, then the next revalidation advances it. */
+  const heroIndex =
     shopifyProducts.length > 0
-      ? shopifyProducts[Math.floor(Math.random() * shopifyProducts.length)]!
-      : null;
+      ? Math.floor(Date.now() / (revalidate * 1000)) % shopifyProducts.length
+      : 0;
+  const heroProduct = shopifyProducts[heroIndex] ?? null;
   const hero = heroProduct ? deriveHero(heroProduct) : null;
 
   /* Newest 5 products — sorted by updatedAt descending. */

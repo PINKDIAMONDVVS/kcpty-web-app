@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Contact · 联系",
   description:
     "Talk to KPCTY studio. Custom strings, repairs, wholesale, press — or just hello. Philadelphia studio, by appointment.",
+  alternates: { canonical: "/contact" },
 };
 
 const KV_ROWS: [string, string][] = [
@@ -44,9 +45,23 @@ const FAQ = [
   },
 ];
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 export default function ContactPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="page-wrap">
         {/* ── Page header ── */}
         <section className="kpcty-container contact-head">
