@@ -85,7 +85,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={GeistSans.variable}>
-      <head>
+      <body className="selection:bg-purple-900 selection:text-white">
+        {/* JSON-LD lives in <body> rather than <head> so browser extensions
+         * that inject into <head> don't trigger React hydration mismatches.
+         * Google's structured-data parser accepts either location. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
@@ -94,8 +97,6 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-      </head>
-      <body className="selection:bg-purple-900 selection:text-white">
         <CartProvider cartPromise={cart}>
           <Navbar />
           <main>
