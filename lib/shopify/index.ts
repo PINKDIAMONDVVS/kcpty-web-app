@@ -477,14 +477,22 @@ export async function getProductRecommendations(
   return reshapeProducts(res.body.data.productRecommendations);
 }
 
+/* Fetch a page of products from Shopify Storefront API.
+ * Defaults to `first: 50` so we never accidentally pull a large catalogue.
+ * Pass an explicit `first` to widen the page, or `after` (cursor) to
+ * paginate. Shopify caps `first` at 250. */
 export async function getProducts({
   query,
   reverse,
   sortKey,
+  first = 50,
+  after,
 }: {
-  query?: string;
+  query?:   string;
   reverse?: boolean;
   sortKey?: string;
+  first?:   number;
+  after?:   string;
 }): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
@@ -496,6 +504,8 @@ export async function getProducts({
       query,
       reverse,
       sortKey,
+      first,
+      after,
     },
   });
 

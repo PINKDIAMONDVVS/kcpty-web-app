@@ -11,9 +11,18 @@ import { NextResponse } from "next/server";
  * Delivery:
  * - If RESEND_API_KEY is set → posts to Resend's REST API (no SDK needed)
  * - If not → returns { configured: false } so the client can fall back
- *   to mailto:, which keeps the form usable in development. */
+ *   to mailto:, which keeps the form usable in development.
+ *
+ * Env vars used:
+ * - RESEND_API_KEY      Resend bearer token
+ * - CONTACT_FROM_EMAIL  Sender; must be on a Resend-verified domain.
+ *                       Default: "KPCTY <contact@kpcty.com>"
+ * - CONTACT_TO_EMAIL    Recipient inbox.
+ *                       Default: "contact@kpcty.com"
+ */
 
-const TO_EMAIL = "contact@kpcty.com";
+const DEFAULT_FROM_EMAIL = "KPCTY <contact@kpcty.com>";
+const DEFAULT_TO_EMAIL   = "contact@kpcty.com";
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const MAX_EMAIL_LEN = 254;
 
@@ -113,7 +122,7 @@ export async function POST(req: Request) {
   if (!resendKey) {
     console.warn(
       "[contact] RESEND_API_KEY not set — message captured but not delivered.\n" +
-        "Add RESEND_API_KEY (and optionally RESEND_FROM_EMAIL) to .env to enable delivery.",
+        "Add RESEND_API_KEY, CONTACT_FROM_EMAIL, CONTACT_TO_EMAIL to .env to enable delivery.",
     );
     return jsonError(
       "Email service isn't configured yet — opening your email client instead.",
@@ -122,10 +131,11 @@ export async function POST(req: Request) {
     );
   }
 
-  /* Resend requires a verified sending domain. Override via env var.
-   * For dev with no verified domain, you can use 'onboarding@resend.dev'. */
-  const fromEmail =
-    process.env.RESEND_FROM_EMAIL ?? "KPCTY <contact@kpcty.com>";
+  /* Resend requires a verified sending domain. CONTACT_FROM_EMAIL must be
+   * on a domain you've verified in your Resend dashboard.
+   * For dev with no verified domain, set CONTACT_FROM_EMAIL=onboarding@resend.dev. */
+  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? DEFAULT_FROM_EMAIL;
+  const toEmail   = process.env.CONTACT_TO_EMAIL   ?? DEFAULT_TO_EMAIL;
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -136,7 +146,7 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         from:     fromEmail,
-        to:       [TO_EMAIL],
+        to:       [toEmail],
         reply_to: email,
         subject,
         text,
@@ -149,7 +159,7 @@ export async function POST(req: Request) {
       console.error("[contact] Resend rejected:", res.status, errBody);
       return jsonError(
         "We couldn't send your message. Please try again or email us directly at " +
-          TO_EMAIL,
+          toEmail,
         502,
       );
     }

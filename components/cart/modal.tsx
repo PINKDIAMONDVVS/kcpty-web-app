@@ -43,12 +43,26 @@ export default function CartModal() {
 
   return (
     <>
-      <button aria-label="Open cart" onClick={openCart} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+      <button
+        aria-label={
+          cart?.totalQuantity
+            ? `Open cart, ${cart.totalQuantity} item${cart.totalQuantity === 1 ? '' : 's'}`
+            : 'Open cart, empty'
+        }
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        onClick={openCart}
+        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+      >
         <OpenCart quantity={cart?.totalQuantity} />
       </button>
 
       <Transition show={isOpen}>
-        <Dialog onClose={closeCart} className="relative z-50">
+        <Dialog
+          onClose={closeCart}
+          className="relative z-50"
+          aria-labelledby="cart-dialog-title"
+        >
           {/* Backdrop */}
           <Transition.Child
             as={Fragment}
@@ -90,7 +104,14 @@ export default function CartModal() {
               <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div className="mono up" style={{ fontSize: 10, color: 'var(--fg-3)', letterSpacing: '0.22em' }}>Carrying · 随身</div>
-                  <div className="serif" style={{ fontSize: 28, marginTop: 4, fontWeight: 300, letterSpacing: '-0.02em' }}>Your stones</div>
+                  <Dialog.Title
+                    as="div"
+                    id="cart-dialog-title"
+                    className="serif"
+                    style={{ fontSize: 28, marginTop: 4, fontWeight: 300, letterSpacing: '-0.02em' }}
+                  >
+                    Your stones
+                  </Dialog.Title>
                 </div>
                 <button
                   onClick={closeCart}

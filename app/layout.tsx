@@ -7,6 +7,8 @@ import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { baseUrl } from "lib/utils";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const { SITE_NAME } = process.env;
 
@@ -41,6 +43,10 @@ export default async function RootLayout({
             <WelcomeToast />
           </main>
         </CartProvider>
+        {/* Vercel Analytics — page views + Web Vitals.
+         * Only auto-enables on Vercel deployments; no-op locally. */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

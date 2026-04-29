@@ -7,7 +7,10 @@ type Route = {
   lastModified: string;
 };
 
-export const dynamic = "force-dynamic";
+/* Cache the sitemap for 1 hour. Crawlers re-fetch frequently and we
+ * don't need to wake up Shopify on every request — once an hour is
+ * fresh enough for new product / collection updates to surface. */
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   validateEnvironmentVariables();

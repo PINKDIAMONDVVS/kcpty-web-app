@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { TAGS } from "lib/constants";
 import {
   addToCart,
@@ -24,6 +25,7 @@ export async function addItem(
     await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
     updateTag(TAGS.cart);
   } catch (e) {
+    Sentry.captureException(e);
     return "Error adding item to cart";
   }
 }
@@ -47,6 +49,7 @@ export async function removeItem(prevState: any, merchandiseId: string) {
       return "Item not found in cart";
     }
   } catch (e) {
+    Sentry.captureException(e);
     return "Error removing item from cart";
   }
 }
@@ -90,7 +93,7 @@ export async function updateItemQuantity(
 
     updateTag(TAGS.cart);
   } catch (e) {
-    console.error(e);
+    Sentry.captureException(e);
     return "Error updating item quantity";
   }
 }

@@ -218,6 +218,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               active={intentFilter !== "all"}
               open={open === "intent"}
               onToggle={() => toggle("intent")}
+              panelId="shop-drop-intent"
               onClear={
                 intentFilter !== "all"
                   ? () => {
@@ -228,7 +229,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               }
             />
             {open === "intent" && (
-              <DropPanel style={{ width: 340 }}>
+              <DropPanel id="shop-drop-intent" label="Filter by intent" style={{ width: 340 }}>
                 {/* "Any" row */}
                 <DropOption
                   selected={intentFilter === "all"}
@@ -285,6 +286,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               active={matFilter !== "all"}
               open={open === "material"}
               onToggle={() => toggle("material")}
+              panelId="shop-drop-material"
               onClear={
                 matFilter !== "all"
                   ? () => {
@@ -295,7 +297,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               }
             />
             {open === "material" && (
-              <DropPanel style={{ width: 400 }}>
+              <DropPanel id="shop-drop-material" label="Filter by material" style={{ width: 400 }}>
                 <DropOption
                   selected={matFilter === "all"}
                   onClick={() => {
@@ -352,6 +354,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               active={sort !== "default"}
               open={open === "sort"}
               onToggle={() => toggle("sort")}
+              panelId="shop-drop-sort"
               onClear={
                 sort !== "default"
                   ? () => {
@@ -362,7 +365,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               }
             />
             {open === "sort" && (
-              <DropPanel style={{ right: 0, left: "auto", width: 200 }}>
+              <DropPanel id="shop-drop-sort" label="Sort products" style={{ right: 0, left: "auto", width: 200 }}>
                 {(["default", "price-asc", "price-desc"] as SortKey[]).map(
                   (s) => (
                     <DropOption
@@ -682,6 +685,7 @@ function DropTrigger({
   open,
   onToggle,
   onClear,
+  panelId,
 }: {
   label: string;
   value: string;
@@ -689,19 +693,28 @@ function DropTrigger({
   open: boolean;
   onToggle: () => void;
   onClear?: () => void;
+  panelId: string;
 }) {
   return (
     <button
       onClick={onToggle}
       className="shop-drop-trigger"
+      type="button"
+      aria-haspopup="listbox"
+      aria-expanded={open}
+      aria-controls={panelId}
+      aria-label={`${label}, current selection: ${value}`}
       style={{
         border: `1px solid ${open || active ? "var(--cinnabar)" : "var(--line-2)"}`,
         color: active ? "var(--cinnabar)" : open ? "var(--fg)" : "var(--fg-3)",
       }}
     >
-      <span className="shop-drop-trigger__label">{label}</span>
+      <span className="shop-drop-trigger__label" aria-hidden>
+        {label}
+      </span>
       <span
         className="shop-drop-trigger__value"
+        aria-hidden
         style={{ color: active ? "var(--cinnabar)" : "var(--fg-2)" }}
       >
         · {value}
@@ -712,13 +725,24 @@ function DropTrigger({
             e.stopPropagation();
             onClear();
           }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              onClear();
+            }
+          }}
           className="shop-drop-trigger__clear"
-          aria-label="Clear filter"
+          aria-label={`Clear ${label} filter`}
         >
           ×
         </span>
       ) : (
-        <span className="shop-drop-trigger__caret">{open ? "▲" : "▼"}</span>
+        <span className="shop-drop-trigger__caret" aria-hidden>
+          {open ? "▲" : "▼"}
+        </span>
       )}
     </button>
   );
@@ -728,12 +752,22 @@ function DropTrigger({
 function DropPanel({
   children,
   style,
+  id,
+  label,
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  id?: string;
+  label?: string;
 }) {
   return (
-    <div className="shop-drop-panel" style={style}>
+    <div
+      className="shop-drop-panel"
+      role="listbox"
+      id={id}
+      aria-label={label}
+      style={style}
+    >
       {children}
     </div>
   );
@@ -756,11 +790,19 @@ function DropOption({
   return (
     <button
       onClick={onClick}
+      type="button"
+      role="option"
+      aria-selected={selected}
       className={`shop-drop-option${selected ? " is-selected" : ""}${fullWidth ? " shop-drop-option--full" : ""}`}
     >
       <span className="shop-drop-option__label">{children}</span>
       {count !== undefined && (
-        <span className="shop-drop-option__count">[{count}]</span>
+        <span
+          className="shop-drop-option__count"
+          aria-label={`${count} pieces`}
+        >
+          [{count}]
+        </span>
       )}
     </button>
   );

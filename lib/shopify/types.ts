@@ -267,8 +267,10 @@ export type ShopifyProductsOperation = {
     products: Connection<ShopifyProduct>;
   };
   variables: {
-    query?: string;
+    query?:   string;
     reverse?: boolean;
     sortKey?: string;
+    first?:   number;
+    after?:   string;
   };
 };

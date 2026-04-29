@@ -3,7 +3,6 @@ import { MarqueeBar } from "components/home/marquee-bar";
 import { NewsletterForm } from "components/home/newsletter-form";
 import { ProductCard } from "components/home/product-card";
 import Footer from "components/layout/footer";
-import { KPCTY_PRODUCTS } from "lib/data/kpcty-data";
 import { parseList, resolveIntent } from "lib/intents";
 import { resolveMaterial } from "lib/materials";
 import { getProducts } from "lib/shopify";
@@ -93,12 +92,58 @@ export const metadata = {
   openGraph: { type: "website" },
 };
 
-const hero = KPCTY_PRODUCTS[9]!;
+/* Render dynamically so the hero "Featured object" rotates between
+ * Shopify products on every page load instead of being frozen at build. */
+export const dynamic = "force-dynamic";
+
+/* Build the hero spec card from a Shopify product. The original prototype
+ * used a richer static record (name + zh + wish + stones + diameter +
+ * beads + lot + series); we synthesize equivalents from the Shopify
+ * fields we actually have. */
+function deriveHero(p: Product) {
+  const intentList   = parseList(p.intents?.value);
+  const materialList = parseList(p.materials?.value);
+  const intentRaw    = intentList[0] ?? "";
+  const intentZh     = intentRaw ? resolveIntent(intentRaw).zh : "";
+
+  /* Try to extract a bead-diameter value from the product's variant
+   * options (e.g. "Bead Ø", "Size", "Diameter"). Falls back to "—". */
+  const beadOption =
+    p.options.find((o) => /bead|diameter|ø|size/i.test(o.name))?.values[0] ??
+    "—";
+
+  /* Lot signature derived from the handle so it looks like an SKU. */
+  const lot = `0x${p.handle.replace(/[^a-z0-9]/gi, "").slice(-6).toUpperCase().padStart(6, "0")}·KPCTY`;
+
+  return {
+    name:        p.title,
+    zh:          intentZh || "—",
+    wish:        intentRaw
+                   ? `Carry for ${intentRaw.toLowerCase()}.`
+                   : (p.description?.slice(0, 60) || "A small wish."),
+    stones:      materialList.length ? materialList.slice(0, 3) : ["—"],
+    diameter:    beadOption,
+    beads:       19,
+    lot,
+    series:      "S1",
+    captionZh:   intentZh || "刻",
+    imageUrl:    p.featuredImage?.url ?? "",
+    imageAlt:    p.featuredImage?.altText ?? p.title,
+  };
+}
 
 export default async function HomePage() {
   const shopifyProducts = await getProducts({});
   const intents = aggregateIntents(shopifyProducts);
   const materials = aggregateMaterials(shopifyProducts);
+
+  /* Pick a random product as the featured hero piece — rotates on
+   * every server render thanks to `dynamic = "force-dynamic"` above. */
+  const heroProduct =
+    shopifyProducts.length > 0
+      ? shopifyProducts[Math.floor(Math.random() * shopifyProducts.length)]!
+      : null;
+  const hero = heroProduct ? deriveHero(heroProduct) : null;
 
   /* Newest 5 products — sorted by updatedAt descending. */
   const newest = [...shopifyProducts]
@@ -227,11 +272,23 @@ export default async function HomePage() {
 
           {/* Right — product stage */}
           <div className="hero__stage-img">
-            <img
-              src="/products_sq/p10_hero.jpg"
-              alt="S1·10 Shuǐ · agarwood + jade"
-            />
-            <div className="caption-zh">水</div>
+            {hero?.imageUrl ? (
+              <Image
+                src={hero.imageUrl}
+                alt={hero.imageAlt || hero.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              /* Fallback if Shopify is empty / unreachable */
+              <img
+                src="/products_sq/p10_hero.jpg"
+                alt="KPCTY featured piece"
+              />
+            )}
+            <div className="caption-zh">{hero?.captionZh ?? "刻"}</div>
 
             <svg
               className="crop-mark"
@@ -270,65 +327,67 @@ export default async function HomePage() {
               />
             </svg>
 
-            <div className="spec-card">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 10,
-                  paddingBottom: 8,
-                  borderBottom: "1px solid var(--line)",
-                }}
-              >
-                <span
-                  className="mono up"
+            {hero && (
+              <div className="spec-card">
+                <div
                   style={{
-                    fontSize: 10.5,
-                    color: "var(--cinnabar)",
-                    letterSpacing: "0.22em",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 10,
+                    paddingBottom: 8,
+                    borderBottom: "1px solid var(--line)",
                   }}
                 >
-                  FEATURED OBJECT
-                </span>
-                <span
-                  className="mono"
-                  style={{
-                    fontSize: 10.5,
-                    color: "var(--fg-3)",
-                    letterSpacing: "0.18em",
-                  }}
-                >
-                  {hero.series}
-                </span>
+                  <span
+                    className="mono up"
+                    style={{
+                      fontSize: 10.5,
+                      color: "var(--cinnabar)",
+                      letterSpacing: "0.22em",
+                    }}
+                  >
+                    FEATURED OBJECT
+                  </span>
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: 10.5,
+                      color: "var(--fg-3)",
+                      letterSpacing: "0.18em",
+                    }}
+                  >
+                    {hero.series}
+                  </span>
+                </div>
+                <dl style={{ margin: 0 }}>
+                  <div className="row">
+                    <dt>Name</dt>
+                    <dd>
+                      {hero.name} · {hero.zh}
+                    </dd>
+                  </div>
+                  <div className="row">
+                    <dt>Wish</dt>
+                    <dd>{hero.wish}</dd>
+                  </div>
+                  <div className="row">
+                    <dt>Stone</dt>
+                    <dd>{hero.stones.join(" + ")}</dd>
+                  </div>
+                  <div className="row">
+                    <dt>Ø</dt>
+                    <dd>
+                      {hero.diameter} · {hero.beads} beads
+                    </dd>
+                  </div>
+                  <div className="row">
+                    <dt>Lot</dt>
+                    <dd>{hero.lot}</dd>
+                  </div>
+                </dl>
               </div>
-              <dl style={{ margin: 0 }}>
-                <div className="row">
-                  <dt>Name</dt>
-                  <dd>
-                    {hero.name} · {hero.zh}
-                  </dd>
-                </div>
-                <div className="row">
-                  <dt>Wish</dt>
-                  <dd>{hero.wish}</dd>
-                </div>
-                <div className="row">
-                  <dt>Stone</dt>
-                  <dd>{hero.stones.join(" + ")}</dd>
-                </div>
-                <div className="row">
-                  <dt>Ø</dt>
-                  <dd>
-                    {hero.diameter} · {hero.beads} beads
-                  </dd>
-                </div>
-                <div className="row">
-                  <dt>Lot</dt>
-                  <dd>{hero.lot}</dd>
-                </div>
-              </dl>
-            </div>
+            )}
           </div>
         </div>
 

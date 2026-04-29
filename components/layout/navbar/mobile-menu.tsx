@@ -14,8 +14,7 @@ const NAV = [
 ];
 
 const AUX = [
-  { label: "Search",  hint: "⌕", href: "/search"  },
-  { label: "Account", hint: "⊙", href: "/account" },
+  { label: "Search", hint: "⌕", href: "/search" },
 ];
 
 export function MobileMenu() {
@@ -74,13 +73,16 @@ export function MobileMenu() {
         aria-hidden
       />
       <aside
+        id="mobile-nav-drawer"
         className={`mobile-menu${open ? " is-open" : ""}`}
         role="dialog"
         aria-modal="true"
-        aria-label="Mobile navigation"
+        aria-labelledby="mobile-nav-drawer-title"
+        aria-hidden={!open}
       >
         <div className="mobile-menu__head">
           <div
+            id="mobile-nav-drawer-title"
             className="mono up"
             style={{
               fontSize: 10,
@@ -167,12 +169,15 @@ export function MobileMenu() {
     <>
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open menu"
+        aria-label="Open navigation menu"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-controls="mobile-nav-drawer"
         className="nav__hamburger"
       >
-        <span />
-        <span />
-        <span />
+        <span aria-hidden />
+        <span aria-hidden />
+        <span aria-hidden />
       </button>
       {mounted && createPortal(drawer, document.body)}
     </>
