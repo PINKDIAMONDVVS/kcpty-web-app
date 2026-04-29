@@ -137,9 +137,7 @@ export function PdpClient({
 
             {/* Corner seal */}
             <div className="pdp__seal-overlay">
-              {intentZh && (
-                <div className="pdp__seal-stamp">{intentZh}</div>
-              )}
+              {intentZh && <div className="pdp__seal-stamp">{intentZh}</div>}
               <div className="pdp__seal-title">
                 {primaryIntent && (
                   <div className="mono pdp__seal-kicker">
@@ -405,7 +403,7 @@ export function PdpClient({
               </div>
               <div className="kv">
                 <dt>Artisan</dt>
-                <dd>Ken S. · Suzhou workshop</dd>
+                <dd>Ken S. · Shanghai workshop</dd>
               </div>
               <div className="kv">
                 <dt>Edition</dt>

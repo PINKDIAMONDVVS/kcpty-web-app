@@ -1,6 +1,10 @@
 "use client";
 
-import { getIntentZh as resolveProductIntentZh, parseList, resolveIntent } from "lib/intents";
+import {
+  getIntentZh as resolveProductIntentZh,
+  parseList,
+  resolveIntent,
+} from "lib/intents";
 import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -160,11 +164,7 @@ export function ShopClient({ products }: { products: Product[] }) {
     <div className="page-wrap">
       {/* Backdrop — closes any open dropdown */}
       {open && (
-        <div
-          onClick={close}
-          className="shop-drop-backdrop"
-          aria-hidden
-        />
+        <div onClick={close} className="shop-drop-backdrop" aria-hidden />
       )}
 
       {/* ── Header ── */}
@@ -201,7 +201,7 @@ export function ShopClient({ products }: { products: Product[] }) {
             {products.length} pieces
             <br />5 families
             <br />
-            Cut in Suzhou · Strung in Philadelphia
+            Cut in Shanghai · Strung in Philadelphia
           </div>
         </div>
       </div>

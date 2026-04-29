@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 const TO = 'contact@kpcty.com';
 
 const TOPICS = [
-  { id: 'general',    label: 'General',        zh: '问候' },
+  { id: 'general',    label: 'General',        zh: '提问' },
   { id: 'commission', label: 'Commission',     zh: '订制' },
   { id: 'wholesale',  label: 'Wholesale',      zh: '批发' },
   { id: 'press',      label: 'Press / Studio', zh: '媒体' },
@@ -129,7 +129,7 @@ export function ContactForm() {
     <>
       <div
         className="mono up"
-        style={{ fontSize: 10.5, letterSpacing: '0.22em', color: 'var(--cinnabar)', marginBottom: 6 }}
+        style={{ fontSize: 14, letterSpacing: '0.22em', color: 'var(--cinnabar)', marginBottom: 6 }}
       >
         ⦿ Send a message · 寄信
       </div>

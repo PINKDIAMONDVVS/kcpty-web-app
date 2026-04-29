@@ -61,7 +61,7 @@ export function WelcomeToast() {
               marginTop: 6,
             }}
           >
-            Spiritual gemstone bracelets, cut in Suzhou and strung in
+            Spiritual gemstone bracelets, cut in Shanghai and strung in
             Philadelphia. Once a piece is gone, the stones we bought for it are
             already older than the re-order button.{" "}
             <Link

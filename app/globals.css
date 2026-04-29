@@ -565,6 +565,10 @@ body::after {
 
 .premise-grid   { display: grid; grid-template-columns: 1fr 2fr; gap: 64px; align-items: start; }
 .premise-prose  { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 36px; }
+/* Brush stroke under the § 01 kicker — explicit width so it reads
+ * as an accent line, not a full-column rule. Renders inline-block so
+ * the SVG `background-image` from .brush actually paints. */
+.premise-brush  { display: inline-block; width: 160px; margin-top: 14px; }
 
 .ritual-grid    { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: center; }
 .ritual-methods { display: flex; gap: 20px; margin-top: 40px; }
@@ -609,6 +613,10 @@ body::after {
   .section-pad-xl { padding: 56px 0; }
   .press-quote    { grid-template-columns: 1fr; gap: 16px; text-align: left; }
   .press-quote__mark { font-size: 72px; line-height: 1; }
+  /* § 01 Premise kicker needs more space above so it doesn't sit too
+   * close to the marquee bar that ends the previous section. */
+  .premise-kicker { margin-top: 10px; }
+  .premise-brush  { width: 120px; }
 }
 
 /* ---- Hero ---- */
@@ -1007,18 +1015,218 @@ body::after {
 .pdp-care { display: grid; grid-template-columns: auto 1fr; gap: 60px; align-items: center; }
 .pdp-care-tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 32px; }
 
-/* ---- About page ---- */
-.about-intro   { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; padding: 80px 0 60px; }
-.about-timeline { display: grid; grid-template-columns: repeat(5, 1fr); }
-.about-values  { display: grid; grid-template-columns: repeat(3, 1fr); }
-.about-founder { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 80px; align-items: start; }
+/* ════════════════════════════════════════
+   About page — clean editorial responsive
+   ════════════════════════════════════════ */
+
+/* Section wrappers
+ * Use padding-block (vertical-only longhand) so when this class shares
+ * a DOM element with .kpcty-container, the container's horizontal
+ * padding is preserved. */
+.about-section          { padding-block: 96px; }
+.about-section--dark    { background: var(--bg); }
+.about-section--card    {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.about-section__title {
+  font-size: clamp(48px, 7vw, 120px);
+  line-height: 0.95;
+  margin-bottom: 56px;
+  letter-spacing: -0.04em;
+}
+
+/* ── Intro ── */
+.about-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  /* Vertical-only — keep .kpcty-container's horizontal padding alive */
+  padding-block: 80px 60px;
+  align-items: end;
+}
+.about-intro__title {
+  font-size: clamp(56px, 10vw, 180px);
+  line-height: 0.88;
+  margin-top: 16px;
+}
+.about-intro__brush { width: 180px; margin-top: 26px; }
+.about-intro__body  { display: flex; flex-direction: column; gap: 18px; }
+.about-intro__lead {
+  font-size: clamp(18px, 2.2vw, 24px);
+  line-height: 1.4;
+  color: var(--fg);
+}
+.about-intro__sub {
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.55;
+  color: var(--fg-2);
+  opacity: 0.85;
+}
+
+/* ── Timeline ── */
+.about-timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.about-timeline__cell {
+  padding: 32px 22px;
+  border-right: 1px solid var(--line);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+}
+.about-timeline__cell:last-child { border-right: none; }
+.about-timeline__year {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--cinnabar);
+}
+.about-timeline__title {
+  font-size: 26px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.about-timeline__body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  opacity: 0.85;
+}
+
+/* ── Values ── */
+.about-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.about-values__cell {
+  padding: 40px 32px;
+  border-right: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+  min-height: 240px;
+}
+.about-values__cell:last-child { border-right: none; }
+.about-values__ghost {
+  position: absolute;
+  top: 10px; right: 20px;
+  font-size: 120px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--bg-3);
+  pointer-events: none;
+  user-select: none;
+}
+.about-values__pinyin {
+  font-size: 11px;
+  color: var(--cinnabar);
+  letter-spacing: 0.18em;
+  margin-bottom: 12px;
+  position: relative;
+}
+.about-values__title {
+  font-size: 28px;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  position: relative;
+}
+.about-values__body {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  position: relative;
+}
+
+/* ── Founder ── */
+.about-founder {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 80px;
+  align-items: start;
+}
+.about-founder__portrait {
+  aspect-ratio: 3/4;
+  background: var(--bg-3);
+  overflow: hidden;
+  margin-bottom: 20px;
+  max-height: 600px;
+}
+.about-founder__pull {
+  font-size: clamp(28px, 4.5vw, 80px);
+  line-height: 1.05;
+  margin-bottom: 32px;
+  letter-spacing: -0.03em;
+}
+.about-founder__sig {
+  font-size: clamp(28px, 3vw, 40px);
+  margin-top: 36px;
+  color: var(--cinnabar);
+}
+.about-letter-body {
+  columns: 2;
+  column-gap: 40px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--fg-2);
+}
+.about-letter-body p { margin-bottom: 14px; break-inside: avoid; }
+.about-letter-body p:last-child { margin-bottom: 0; }
+
+/* ── Press ── */
+.about-press {
+  padding-block: 60px;
+  text-align: center;
+}
+.about-press__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px 36px;
+  opacity: 0.7;
+}
+.about-press__name {
+  font-size: clamp(15px, 1.6vw, 22px);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* ── CTA ── */
+.about-cta {
+  background: var(--bg);
+  padding: 80px 0;
+  text-align: center;
+  border-top: 1px solid var(--line);
+}
+.about-cta__zh {
+  font-size: 22px;
+  color: var(--cinnabar);
+  letter-spacing: 0.3em;
+  margin-bottom: 12px;
+}
+.about-cta__title {
+  font-size: clamp(48px, 8vw, 140px);
+  line-height: 0.9;
+  margin-bottom: 28px;
+  letter-spacing: -0.04em;
+}
+.about-cta__btn { padding: 22px 44px; }
 
 /* ════════════════════════════════════════
    Contact page — matches reference contact.jsx
    ════════════════════════════════════════ */
 
-/* Header — three-column row with display title in the middle */
-.contact-head           { padding: 56px 0 28px; border-bottom: 1px solid var(--line); }
+/* Header — three-column row with display title in the middle.
+ * Uses padding-block (vertical-only) so the .kpcty-container side
+ * padding on the same element is preserved. */
+.contact-head           { padding-block: 56px 28px; border-bottom: 1px solid var(--line); }
 .contact-head__row      { display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: 32px; }
 .contact-head__num      { color: var(--fg-3); font-size: 11px; letter-spacing: 0.24em; }
 .contact-head__title-wrap { text-align: center; }
@@ -1039,6 +1247,11 @@ body::after {
   letter-spacing: 0.2em;
   font-weight: 400;
 }
+.contact-head__brush {
+  display: inline-block;
+  width: 160px;
+  margin-top: 24px;
+}
 .contact-head__meta { color: var(--fg-3); text-align: right; line-height: 1.6; font-size: 11px; letter-spacing: 0.18em; }
 
 /* Two-column main grid: studio info left, terminal-style form right */
@@ -1046,7 +1259,7 @@ body::after {
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   gap: 80px;
-  padding: 56px 0 80px;
+  padding-block: 56px 80px;
   align-items: start;
 }
 .contact-grid__left,
@@ -1104,13 +1317,16 @@ body::after {
    Policies page · clean editorial system
    ════════════════════════════════════════ */
 
-/* ── Header ── */
+/* ── Header ──
+ * padding-block (vertical-only) so .kpcty-container's horizontal padding
+ * on the same element survives — without this, the hero content sits
+ * flush against the viewport edges on every breakpoint. */
 .pol-head {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: 60px;
   align-items: end;
-  padding: 64px 0 40px;
+  padding-block: 64px 40px;
   border-bottom: 1px solid var(--line);
 }
 .pol-kicker {
@@ -1148,7 +1364,7 @@ body::after {
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 80px;
-  padding: 56px 0 120px;
+  padding-block: 56px 120px;
   align-items: start;
 }
 
@@ -1385,15 +1601,18 @@ body::after {
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
+  /* Tablet: stacked hero with proper breathing room above + below */
   .pol-head {
     grid-template-columns: 1fr;
     gap: 28px;
-    padding: 40px 0 32px;
+    padding-block: 56px 48px;
   }
+  .pol-title { font-size: clamp(64px, 12vw, 140px); }
+  .pol-head__intro { font-size: 17px; }
   .pol-body {
     grid-template-columns: 1fr;
     gap: 24px;
-    padding: 24px 0 80px;
+    padding-block: 56px 80px;
   }
 
   /* TOC becomes a horizontal sticky chip strip below the navbar */
@@ -1444,6 +1663,14 @@ body::after {
 }
 
 @media (max-width: 768px) {
+  /* Phone hero — generous top breathing room, bigger title clamp,
+   * tighter intro text, more gap before the TOC strip kicks in. */
+  .pol-head            { padding-block: 48px 44px; gap: 22px; }
+  .pol-title           { font-size: clamp(56px, 15vw, 104px); }
+  .pol-head__intro     { font-size: 16px; line-height: 1.6; }
+  .pol-head__updated   { opacity: 0.7; }
+  .pol-body            { padding-block: 40px 64px; }
+
   .pol-fact {
     grid-template-columns: 1fr;
     gap: 4px;
@@ -2008,17 +2235,36 @@ body::after {
   .story-grid > *   { border-right: none; }
   .foot__row        { grid-template-columns: 1fr 1fr; }
   /* About page */
-  .about-intro      { grid-template-columns: 1fr; gap: 40px; padding: 60px 0 40px; }
-  .about-timeline   { grid-template-columns: 1fr 1fr; }
-  .about-values     { grid-template-columns: 1fr; }
-  .about-values > * { border-right: none !important; }
-  .about-founder    { grid-template-columns: 1fr; gap: 48px; }
+  /* About — tablet (≤1024 px): collapse two-column layouts and the
+   * letter's two-column body so reading flow stays straight. */
+  .about-section            { padding-block: 64px; }
+  .about-section__title     { margin-bottom: 36px; }
+  .about-intro              { grid-template-columns: 1fr; gap: 32px; padding-block: 56px 36px; align-items: start; }
+  .about-timeline           { grid-template-columns: 1fr 1fr; }
+  .about-timeline__cell     { min-height: 200px; padding: 24px 20px; gap: 16px; }
+  .about-timeline__cell:nth-child(2n)        { border-right: none; }
+  .about-timeline__cell:nth-child(-n+3)      { border-bottom: 1px solid var(--line); }
+  .about-values             { grid-template-columns: 1fr; }
+  .about-values__cell       { border-right: none !important; border-bottom: 1px solid var(--line); }
+  .about-values__cell:last-child { border-bottom: none; }
+  .about-values__ghost      { font-size: 88px; top: 14px; right: 18px; }
+  .about-founder            { grid-template-columns: 1fr; gap: 36px; }
+  .about-founder__portrait  { max-width: 360px; }
+  .about-letter-body        { columns: 1; }
   /* Contact page */
+  /* Contact — tablet */
+  .contact-head         { padding-block: 56px 56px; }
   .contact-head__row    { grid-template-columns: 1fr; gap: 18px; align-items: start; }
   .contact-head__title-wrap { text-align: left; }
+  .contact-head__title  { font-size: clamp(56px, 12vw, 120px); }
+  .contact-head__brush  { width: 140px; margin-top: 20px; }
   .contact-head__meta   { text-align: left; }
-  .contact-grid         { grid-template-columns: 1fr; gap: 56px; padding: 40px 0 64px; }
+  .contact-grid         { grid-template-columns: 1fr; gap: 48px; padding-block: 64px 64px; }
   .contact-topics       { grid-template-columns: repeat(3, 1fr); }
+  /* FAQ split feels cramped at tablet width — collapse to single col */
+  .contact-faq          { grid-template-columns: 1fr; }
+  .contact-faq__item:nth-child(odd)  { padding-right: 0; border-right: none; }
+  .contact-faq__item:nth-child(even) { padding-left: 0; }
 }
 @media (max-width: 768px) {
   .container, .kpcty-container { padding: 0 20px; }
@@ -2033,15 +2279,57 @@ body::after {
   .look-cover       { grid-template-columns: 1fr !important; gap: 20px !important; }
   .look-cover-side  { display: none; }
   /* About page */
-  .about-timeline   { grid-template-columns: 1fr; }
-  .about-timeline > * { border-right: none !important; }
-  .about-letter-body { columns: 1 !important; }
+  /* About — phones (≤ 768 px) */
+  .about-section            { padding-block: 48px; }
+  .about-intro              { padding-block: 40px 28px; }
+  .about-intro__title       { font-size: clamp(56px, 14vw, 96px); }
+  .about-intro__brush       { width: 140px; margin-top: 18px; }
+  .about-timeline           { grid-template-columns: 1fr; }
+  .about-timeline__cell     {
+    border-right: none !important;
+    border-bottom: 1px solid var(--line) !important;
+    min-height: 0;
+    padding: 22px 4px;
+  }
+  .about-timeline__cell:last-child { border-bottom: none !important; }
+  .about-timeline__title    { font-size: 22px; }
+  .about-values__cell       { padding: 28px 20px 32px; min-height: auto; }
+  .about-values__title      { font-size: 24px; margin-bottom: 12px; }
+  .about-values__ghost      { font-size: 64px; top: 10px; right: 14px; }
+  .about-founder__pull      { margin-bottom: 24px; }
+  .about-founder__sig       { margin-top: 28px; }
+  .about-press              { padding-block: 40px; }
+  .about-press__row         { gap: 14px 24px; }
+  .about-cta                { padding: 56px 0; }
+  .about-cta__zh            { font-size: 18px; letter-spacing: 0.22em; }
+  .about-cta__btn           { padding: 18px 32px; font-size: 11px; }
   /* Contact mobile */
-  .contact-row-2     { grid-template-columns: 1fr; }
-  .contact-topics    { grid-template-columns: repeat(2, 1fr); }
-  .contact-faq       { grid-template-columns: 1fr; }
-  .contact-faq__item:nth-child(odd)  { padding-right: 0; border-right: none; }
-  .contact-faq__item:nth-child(even) { padding-left: 0; }
+  /* Contact — phones
+   * Hero gets generous top padding + tighter title clamp + bigger
+   * gap before the studio info so the page reads as
+   *   ┌─ hero ─┐  (visual rest)  ┌─ form ─┐
+   * not as one continuous block. */
+  .contact-head            { padding-block: 48px 48px; }
+  .contact-head__title     { font-size: clamp(48px, 16vw, 104px); line-height: 0.9; }
+  .contact-head__brush     { width: 120px; margin-top: 18px; }
+  .contact-head__meta      { font-size: 10.5px; opacity: 0.7; }
+  .contact-grid            { gap: 36px; padding-block: 56px 48px; }
+  .contact-row-2           { grid-template-columns: 1fr; }
+  .contact-topics          { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .contact-topic           { padding: 14px 10px; min-height: 56px; }
+  .contact-topic__zh       { font-size: 11px; margin-top: 3px; }
+  .contact-faq             { grid-template-columns: 1fr; }
+  .contact-faq__item                  { padding: 22px 0; }
+  .contact-faq__item:nth-child(odd)   { padding-right: 0; border-right: none; }
+  .contact-faq__item:nth-child(even)  { padding-left: 0; }
+  /* KV rows: tighter label column on narrow viewports */
+  .contact-grid__left .kv { grid-template-columns: 92px 1fr; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  /* Smallest phones — KV rows stack so long values like the address
+   * don't squeeze into a half-column */
+  .contact-grid__left .kv { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
 }
 
 /* ─── PDP recommendations grid ─── */

@@ -33,7 +33,7 @@ const TIMELINE = [
   {
     y: "2026",
     t: "Season One",
-    d: "Spiritual gemstone bracelets, cut in Suzhou, knotted in Philadelphia. Which is where you came in.",
+    d: "Spiritual gemstone bracelets, cut in Shanghai, knotted in Philadelphia. Which is where you came in.",
   },
 ];
 
@@ -69,46 +69,33 @@ export default function AboutPage() {
               <div className="mono up" style={{ fontSize: 11, opacity: 0.55 }}>
                 § About · 关于
               </div>
-              <h1
-                className="display"
-                style={{
-                  fontSize: "clamp(72px,10vw,180px)",
-                  lineHeight: 0.88,
-                  marginTop: 16,
-                }}
-              >
+              <h1 className="display about-intro__title">
                 Not a<br />
                 brand, a<br />
                 <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
                   method.
                 </em>
               </h1>
-              <div className="brush" style={{ width: 180, marginTop: 26 }} />
+              <div className="brush about-intro__brush" />
             </div>
-            <div style={{ alignSelf: "end" }}>
-              <p
-                className="serif"
-                style={{ fontSize: 24, lineHeight: 1.35, marginBottom: 24 }}
-              >
-                KPCTY (刻瓷 · kè xiàn · "carved line") is a jewelry studio that
-                restrings the oldest material culture in the Chinese world —{" "}
+            <div className="about-intro__body">
+              <p className="serif about-intro__lead">
+                KPCTY (刻瓷 · kè ci · "carved porcelain") is a jewelry studio
+                that restrings the oldest material culture in the Asian world —{" "}
                 <em style={{ color: "var(--cinnabar)" }}>beads for thinking</em>{" "}
                 — for a generation that never knew it was missing them.
               </p>
-              <p
-                className="serif"
-                style={{ fontSize: 18, lineHeight: 1.5, opacity: 0.8 }}
-              >
+              {/* <p className="serif about-intro__sub">
                 We aren't trying to be an Asian version of anything. We aren't
                 trying to go viral. We're trying to make pieces that your
                 friends ask about and your grandmother nods at.
-              </p>
+              </p> */}
             </div>
           </div>
         </section>
 
         {/* ── Timeline ── */}
-        <section style={{ background: "var(--bg)", padding: "100px 0" }}>
+        <section className="about-section about-section--dark">
           <div className="kpcty-container">
             <div
               className="mono up"
@@ -121,14 +108,7 @@ export default function AboutPage() {
             >
               § How we got here
             </div>
-            <h2
-              className="display"
-              style={{
-                fontSize: "clamp(56px,7vw,120px)",
-                marginBottom: 60,
-                lineHeight: 0.95,
-              }}
-            >
+            <h2 className="display about-section__title">
               A{" "}
               <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
                 slow
@@ -136,40 +116,12 @@ export default function AboutPage() {
               timeline.
             </h2>
             <div className="about-timeline">
-              {TIMELINE.map((e, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: "32px 20px",
-                    borderRight: i < 4 ? "1px solid var(--line)" : "none",
-                    borderTop: "1px solid var(--line)",
-                    borderBottom: "1px solid var(--line)",
-                    minHeight: 280,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div
-                    className="mono"
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.14em",
-                      color: "var(--cinnabar)",
-                    }}
-                  >
-                    YEAR · {e.y}
-                  </div>
+              {TIMELINE.map((e) => (
+                <div key={e.y} className="about-timeline__cell">
+                  <div className="mono about-timeline__year">YEAR · {e.y}</div>
                   <div>
-                    <div
-                      className="serif"
-                      style={{ fontSize: 28, marginBottom: 10 }}
-                    >
-                      {e.t}
-                    </div>
-                    <p style={{ fontSize: 14, lineHeight: 1.5, opacity: 0.8 }}>
-                      {e.d}
-                    </p>
+                    <div className="serif about-timeline__title">{e.t}</div>
+                    <p className="about-timeline__body">{e.d}</p>
                   </div>
                 </div>
               ))}
@@ -178,7 +130,7 @@ export default function AboutPage() {
         </section>
 
         {/* ── Values ── */}
-        <section className="kpcty-container" style={{ padding: "100px 0" }}>
+        {/* <section className="kpcty-container about-section">
           <div className="sec-head" style={{ paddingTop: 0 }}>
             <div className="sec-head__num">§ Principles · 三则</div>
             <h2 className="display sec-head__title">
@@ -191,104 +143,29 @@ export default function AboutPage() {
             <div className="sec-head__meta">NON-NEGOTIABLE</div>
           </div>
           <div className="about-values">
-            {PRINCIPLES.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "40px 32px",
-                  borderRight: i < 2 ? "1px solid var(--line)" : "none",
-                  borderTop: "1px solid var(--line)",
-                  borderBottom: "1px solid var(--line)",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                {/* Ghost numeral */}
-                <div
-                  className="serif-sc"
-                  style={{
-                    fontSize: 120,
-                    lineHeight: 1,
-                    color: "var(--bg-3)",
-                    position: "absolute",
-                    top: 10,
-                    right: 20,
-                    fontWeight: 600,
-                    pointerEvents: "none",
-                    userSelect: "none",
-                  }}
-                >
-                  {v.n}
-                </div>
-                <div
-                  className="mono up"
-                  style={{
-                    fontSize: 11,
-                    color: "var(--cinnabar)",
-                    letterSpacing: "0.18em",
-                    marginBottom: 12,
-                    position: "relative",
-                  }}
-                >
-                  {v.p}
-                </div>
-                <div
-                  className="serif"
-                  style={{
-                    fontSize: 32,
-                    lineHeight: 1.1,
-                    marginBottom: 18,
-                    position: "relative",
-                  }}
-                >
-                  {v.t}
-                </div>
-                <p
-                  style={{
-                    fontSize: 15,
-                    lineHeight: 1.5,
-                    position: "relative",
-                    color: "var(--fg-2)",
-                  }}
-                >
-                  {v.d}
-                </p>
+            {PRINCIPLES.map((v) => (
+              <div key={v.n} className="about-values__cell">
+                <div className="serif-sc about-values__ghost">{v.n}</div>
+                <div className="mono up about-values__pinyin">{v.p}</div>
+                <div className="serif about-values__title">{v.t}</div>
+                <p className="about-values__body">{v.d}</p>
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* ── Founder letter ── */}
-        <section
-          style={{
-            background: "var(--bg-2)",
-            padding: "100px 0",
-            borderTop: "1px solid var(--line)",
-            borderBottom: "1px solid var(--line)",
-          }}
-        >
+        <section className="about-section about-section--card">
           <div className="kpcty-container about-founder">
             {/* Left: portrait + label */}
             <div>
-              <div
-                style={{
-                  aspectRatio: "3/4",
-                  background: "var(--bg-3)",
-                  overflow: "hidden",
-                  marginBottom: 20,
-                }}
-              >
+              <div className="about-founder__portrait">
                 <Image
                   src="/products_tall/p12.jpg"
                   alt="Ken Shi, founder"
                   width={480}
                   height={640}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    justifyContent: "center",
-                  }}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               </div>
               <div className="label-box">
@@ -296,7 +173,7 @@ export default function AboutPage() {
                 <br />
                 Founder · Strung, and writes the letters
                 <br />
-                Philadelphia, PA × Suzhou, CN
+                Philadelphia, PA × Shanghai, CN
               </div>
             </div>
 
@@ -308,14 +185,7 @@ export default function AboutPage() {
               >
                 § Letter from the founder
               </div>
-              <h2
-                className="display"
-                style={{
-                  fontSize: "clamp(36px,4.5vw,80px)",
-                  lineHeight: 1,
-                  marginBottom: 32,
-                }}
-              >
+              <h2 className="display about-founder__pull">
                 "Everyone in my family had beads on their wrist. I thought it
                 was{" "}
                 <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
@@ -323,28 +193,19 @@ export default function AboutPage() {
                 </em>
                 . Until I didn't."
               </h2>
-              <div
-                className="about-letter-body"
-                style={{
-                  columns: 2,
-                  columnGap: 40,
-                  fontSize: 16,
-                  lineHeight: 1.6,
-                  color: "var(--fg-2)",
-                }}
-              >
-                <p style={{ marginBottom: 14 }}>
+              <div className="about-letter-body">
+                <p>
                   I was 11 when my grandfather gave me a strand of sandalwood
                   beads. I wore it once, for a picture, and left it in a drawer
                   until 2022, when he passed.
                 </p>
-                <p style={{ marginBottom: 14 }}>
+                <p>
                   Cleaning out his desk I found his — smooth as a plum pit, dark
                   as pine-tar. He had rubbed fourteen years of worry into them.
                   I put his on my left wrist and mine on my right, and they
                   didn't match, and that felt right.
                 </p>
-                <p style={{ marginBottom: 14 }}>
+                <p>
                   KPCTY started with one question: why did I have to be 31
                   before anyone my age wore this? The stones are good. The
                   stories are great. The only thing wrong was the{" "}
@@ -352,25 +213,13 @@ export default function AboutPage() {
                 </p>
                 <p>So we redid the packaging. We left the stones alone.</p>
               </div>
-              <div
-                className="serif"
-                style={{
-                  fontSize: 40,
-                  marginTop: 40,
-                  color: "var(--cinnabar)",
-                }}
-              >
-                — Ken
-              </div>
+              <div className="serif about-founder__sig">— Ken</div>
             </div>
           </div>
         </section>
 
         {/* ── Press ── */}
-        <section
-          className="kpcty-container"
-          style={{ padding: "60px 0", textAlign: "center" }}
-        >
+        {/* <section className="kpcty-container about-press">
           <div
             className="mono up"
             style={{
@@ -382,16 +231,7 @@ export default function AboutPage() {
           >
             As featured in · 媒体
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              opacity: 0.6,
-              flexWrap: "wrap",
-              gap: 30,
-            }}
-          >
+          <div className="about-press__row">
             {[
               "NEW YORK TIMES",
               "VOGUE CHINA",
@@ -400,56 +240,24 @@ export default function AboutPage() {
               "THE CUT",
               "AIR MAIL",
             ].map((p) => (
-              <div
-                key={p}
-                className="serif"
-                style={{ fontSize: 24, letterSpacing: "0.05em" }}
-              >
+              <div key={p} className="serif about-press__name">
                 {p}
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* ── CTA ── */}
-        <section
-          style={{
-            background: "var(--bg)",
-            padding: "80px 0",
-            textAlign: "center",
-            borderTop: "1px solid var(--line)",
-          }}
-        >
+        <section className="about-cta">
           <div className="kpcty-container">
-            <div
-              className="serif-sc"
-              style={{
-                fontSize: 22,
-                color: "var(--cinnabar)",
-                letterSpacing: "0.3em",
-                marginBottom: 12,
-              }}
-            >
-              请·进来
-            </div>
-            <h2
-              className="display"
-              style={{
-                fontSize: "clamp(56px,8vw,140px)",
-                lineHeight: 0.9,
-                marginBottom: 28,
-              }}
-            >
+            <div className="serif-sc about-cta__zh">欢迎光临</div>
+            <h2 className="display about-cta__title">
               Help yourself,{" "}
               <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
                 friend.
               </em>
             </h2>
-            <Link
-              href="/search"
-              className="btn btn--red"
-              style={{ padding: "22px 44px" }}
-            >
+            <Link href="/search" className="btn btn--red about-cta__btn">
               Enter the shop →
             </Link>
           </div>

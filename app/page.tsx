@@ -368,12 +368,12 @@ export default async function HomePage() {
         <div className="premise-grid">
           <div>
             <div
-              className="mono up"
+              className="mono up premise-kicker"
               style={{ fontSize: 11, color: "var(--fg-3)" }}
             >
               § 01 · Premise
             </div>
-            <div className="brush" style={{ marginTop: 14 }} />
+            <span className="brush premise-brush" aria-hidden />
           </div>
           <div>
             <h2

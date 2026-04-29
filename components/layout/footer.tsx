@@ -56,18 +56,16 @@ const STUDIO_LINKS = [
   { label: "Shop", href: "/search" },
   { label: "About", href: "/about" },
   { label: "Lookbook", href: "/lookbook" },
-  { label: "Contact", href: "/contact" },
 ];
 
 const POLICY_LINKS = [
   { label: "Terms & Policies", href: "/policies" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const SOCIALS = [
   { label: "Instagram", href: "https://instagram.com/kpcty" },
   { label: "TikTok", href: "https://tiktok.com/@kpcty" },
-  { label: "Xiaohongshu", href: "https://xiaohongshu.com/" },
-  { label: "Substack", href: "#newsletter" },
 ];
 
 export default async function Footer() {
@@ -206,7 +204,7 @@ export default async function Footer() {
             <span>
               © {new Date().getFullYear()} KPCTY STUDIO · ALL RIGHTS RESERVED
             </span>
-            <span>CUT IN SUZHOU · STRUNG IN Philadelphia</span>
+            <span>CUT IN Shanghai · STRUNG IN Philadelphia</span>
             <span style={{ color: "var(--fg-4)" }}>SITE V0.1 · SEASON ONE</span>
           </div>
         </div>

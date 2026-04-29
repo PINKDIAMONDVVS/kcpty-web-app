@@ -1,6 +1,5 @@
 import Footer from "components/layout/footer";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
@@ -10,47 +9,38 @@ export const metadata: Metadata = {
 };
 
 const KV_ROWS: [string, string][] = [
-  ["Studio",   "456 N 5th St · Philadelphia · PA 19123"],
-  ["Sourcing", "苏州 · Sūzhōu workshop"],
-  ["Hours",    "Mon – Fri · 9:30am – 5:00pm"],
-  ["Email",    "contact@kpcty.com"],
-  ["IG",       "@kpcty"],
-  ["小红书",    "刻瓷 KPCTY"],
-];
-
-const PRESS = [
-  "Nylon",
-  "i-D",
-  "Office",
-  "SSENSE",
-  "Vogue 中国",
-  "Highsnobiety",
+  ["Studio", "456 N 5th St · Philadelphia · PA 19123"],
+  ["Sourcing", "上海 · Shanghai workshop"],
+  ["Hours", "Mon – Fri · 9:30am – 5:00pm"],
+  ["Email", "contact@kpcty.com"],
+  ["IG", "@kpcty"],
+  ["Tiktok", "@kpcty"],
 ];
 
 const FAQ = [
   {
     q: "Can I commission a custom piece?",
-    a: "Yes — share the wish, the wrist size, and any stones you love. Lead time is 2–3 weeks.",
+    a: "Yes — share the wish, your wrist size, and any stones you love. Lead time is 2–3 weeks.",
   },
   {
     q: "Do you ship internationally?",
-    a: "Worldwide. EU and UK are duties-paid; everywhere else is DDU. Tracking included.",
+    a: "Not yet — we currently ship within the US only. International is coming soon.",
   },
   {
     q: "How do I size a bracelet?",
-    a: "Wrap a soft string around your wrist where you want it to sit, then measure flat against a ruler in cm. Add 1–2cm for comfort.",
+    a: "Wrap a soft string around your wrist where you want it to sit, then measure it flat against a ruler in centimeters. Add 1–2cm for comfort.",
   },
   {
     q: "Are the stones real?",
-    a: "Every stone is natural and certified at source. We send a hand-signed Certificate of Origin with each piece.",
+    a: "Every stone is natural and certified at the source. Each piece ships with a hand-signed Certificate of Origin.",
   },
   {
-    q: "Care & repair?",
-    a: "Avoid lotion, hot tubs, and gym chalk. If the cord frays, get in touch — we offer paid re-stringing. See our care policy for the full guide.",
+    q: "How do I care for and repair my bracelet?",
+    a: "Avoid lotion, hot tubs, and gym chalk. If the cord frays, get in touch — we offer paid re-stringing. See our care guide for the full details.",
   },
   {
-    q: "Wholesale or stockists?",
-    a: "We work with a small list of independent shops. Choose Wholesale above and tell us about your store.",
+    q: "What's your return policy?",
+    a: "We offer free returns within 14 days of delivery, on unworn pieces in their original packaging.",
   },
 ];
 
@@ -70,11 +60,12 @@ export default function ContactPage() {
                 </em>
                 <span className="serif-sc contact-head__zh">说</span>
               </h1>
+              <span className="brush contact-head__brush" aria-hidden />
             </div>
             <div className="mono up contact-head__meta">
-              Reply within 48 hr
+              Quick Reply
               <br />
-              <span style={{ color: "var(--cinnabar)" }}>·</span> Mon – Fri
+              {/* <span style={{ color: "var(--cinnabar)" }}>·</span> Mon – Fri */}
             </div>
           </div>
         </section>
@@ -86,7 +77,7 @@ export default function ContactPage() {
             <div
               className="mono up"
               style={{
-                fontSize: 10.5,
+                fontSize: 14,
                 letterSpacing: "0.22em",
                 color: "var(--cinnabar)",
                 marginBottom: 18,
@@ -94,7 +85,7 @@ export default function ContactPage() {
             >
               ⦿ The studio · 工坊
             </div>
-            <p
+            {/* <p
               className="serif"
               style={{
                 fontSize: 22,
@@ -112,7 +103,7 @@ export default function ContactPage() {
                 longjing
               </em>{" "}
               on, sometimes with the cat on the worktable.
-            </p>
+            </p> */}
 
             <dl style={{ margin: 0 }}>
               {KV_ROWS.map(([k, v]) => (
@@ -122,7 +113,7 @@ export default function ContactPage() {
                     style={{
                       color: "var(--fg)",
                       fontFamily: '"JetBrains Mono", monospace',
-                      fontSize: 13,
+                      fontSize: 14,
                     }}
                   >
                     {v}
@@ -132,7 +123,7 @@ export default function ContactPage() {
             </dl>
 
             {/* Visit call-out */}
-            <div
+            {/* <div
               style={{
                 marginTop: 36,
                 padding: 20,
@@ -166,14 +157,19 @@ export default function ContactPage() {
               <Link
                 href="mailto:contact@kpcty.com?subject=Studio%20visit%20request"
                 className="btn-pill"
-                style={{ marginTop: 14, color: "var(--fg)", borderColor: "var(--fg)", display: "inline-flex" }}
+                style={{
+                  marginTop: 14,
+                  color: "var(--fg)",
+                  borderColor: "var(--fg)",
+                  display: "inline-flex",
+                }}
               >
                 Book a visit ▶
               </Link>
-            </div>
+            </div> */}
 
             {/* Press */}
-            <div style={{ marginTop: 36 }}>
+            {/* <div style={{ marginTop: 36 }}>
               <div
                 className="mono up"
                 style={{
@@ -192,7 +188,7 @@ export default function ContactPage() {
                   </span>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* RIGHT — terminal-style form */}
@@ -202,7 +198,10 @@ export default function ContactPage() {
         </section>
 
         {/* ── FAQ strip ── */}
-        <section className="kpcty-container" style={{ padding: "24px 0 60px" }}>
+        <section
+          className="kpcty-container"
+          style={{ paddingTop: 24, paddingBottom: 60 }}
+        >
           <div className="sec-head">
             <div className="sec-head__num">§ 07 — FAQ · 问答</div>
             <h2 className="sec-head__title">Before you write</h2>
