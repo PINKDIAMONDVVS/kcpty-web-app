@@ -1,5 +1,7 @@
 "use client";
 
+import { addItem } from "components/cart/actions";
+import { useCart } from "components/cart/cart-context";
 import {
   getIntentZh as resolveProductIntentZh,
   parseList,
@@ -9,7 +11,8 @@ import type { Product } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 /* Resolve a single Chinese seal char for an intent value. Uses the fuzzy
  * lookup from lib/intents (exact → word-by-word → substring), so values
@@ -96,10 +99,13 @@ export function ShopClient({ products }: { products: Product[] }) {
     return hit ?? "all";
   }, [searchParams, allMaterials]);
 
+  const initialQuery = searchParams.get("q") ?? "";
+
   const [matFilter, setMatFilter] = useState(initialMaterial);
   const [intentFilter, setIntentFilter] = useState(initialIntent);
   const [sort, setSort] = useState<SortKey>("default");
   const [view, setView] = useState<ViewKey>("grid");
+  const [query, setQuery] = useState(initialQuery);
 
   /* Sync if URL changes (e.g. clicking an intent card while already on /search) */
   useEffect(() => {
@@ -119,6 +125,25 @@ export function ShopClient({ products }: { products: Product[] }) {
       arr = arr.filter((p) =>
         parseList(p.intents?.value).includes(intentFilter),
       );
+    /* Text search — matches title, description, intents, materials, tags.
+     * Whitespace-tolerant: "calm jade" must match products whose searchable
+     * blob contains both tokens (in any order). */
+    const q = query.trim().toLowerCase();
+    if (q) {
+      const tokens = q.split(/\s+/).filter(Boolean);
+      arr = arr.filter((p) => {
+        const blob = [
+          p.title,
+          p.description ?? "",
+          ...parseList(p.intents?.value),
+          ...parseList(p.materials?.value),
+          ...p.tags,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return tokens.every((t) => blob.includes(t));
+      });
+    }
     if (sort === "price-asc")
       arr.sort(
         (a, b) =>
@@ -132,7 +157,7 @@ export function ShopClient({ products }: { products: Product[] }) {
           parseFloat(a.priceRange.minVariantPrice.amount),
       );
     return arr;
-  }, [products, matFilter, intentFilter, sort]);
+  }, [products, matFilter, intentFilter, sort, query]);
 
   const cntMat = (v: string) =>
     v === "all"
@@ -203,6 +228,38 @@ export function ShopClient({ products }: { products: Product[] }) {
             <br />
             Cut in Shanghai · Strung in Philadelphia
           </div>
+        </div>
+      </div>
+
+      {/* ── Search row ── */}
+      <div className="kpcty-container shop-search-row">
+        <label htmlFor="shop-search" className="sr-only">
+          Search the archive
+        </label>
+        <div className="shop-search">
+          <span className="shop-search__icon" aria-hidden>
+            ⌕
+          </span>
+          <input
+            id="shop-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by stone, wish, or piece — e.g. amethyst, calm, agarwood"
+            autoComplete="off"
+            spellCheck={false}
+            className="shop-search__input"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="shop-search__clear"
+            >
+              ×
+            </button>
+          )}
         </div>
       </div>
 
@@ -330,7 +387,7 @@ export function ShopClient({ products }: { products: Product[] }) {
           </div>
 
           {/* Active filter summary */}
-          {(intentFilter !== "all" || matFilter !== "all") && (
+          {(intentFilter !== "all" || matFilter !== "all" || query.trim()) && (
             <span
               className="mono"
               style={{
@@ -427,12 +484,15 @@ export function ShopClient({ products }: { products: Product[] }) {
               letterSpacing: "0.2em",
             }}
           >
-            No pieces match this filter.
+            {query.trim()
+              ? `No pieces match "${query.trim()}".`
+              : "No pieces match this filter."}
           </div>
           <button
             onClick={() => {
               setIntentFilter("all");
               setMatFilter("all");
+              setQuery("");
             }}
             className="btn btn--ghost"
             style={{ marginTop: 24 }}
@@ -606,7 +666,12 @@ export function ShopClient({ products }: { products: Product[] }) {
   );
 }
 
-/* ── Product card ── */
+/* ── Product card ──
+ * Uses a "stretched link" pattern so the entire card remains clickable
+ * (navigates to PDP) while still letting an inline Quick-Add button
+ * sit *above* the link layer. The card is an <article>, the title is a
+ * <Link> whose ::after covers the whole card, and QuickAdd uses
+ * z-index to float above that ::after. */
 function ShopifyCard({ product: p }: { product: Product }) {
   const intentZh = getIntentZh(p);
   const price = fmt(
@@ -624,7 +689,7 @@ function ShopifyCard({ product: p }: { product: Product }) {
   const materials = parseList(p.materials?.value);
 
   return (
-    <Link href={`/product/${p.handle}`} className="pcard lift">
+    <article className="pcard lift">
       <div className="pcard__media">
         {p.featuredImage?.url ? (
           <Image
@@ -645,7 +710,12 @@ function ShopifyCard({ product: p }: { product: Product }) {
       </div>
       <div className="pcard__meta">
         <div>
-          <div className="pcard__name">{p.title}</div>
+          <Link
+            href={`/product/${p.handle}`}
+            className="pcard__name pcard__stretched-link"
+          >
+            {p.title}
+          </Link>
           {p.description && (
             <div
               className="serif"
@@ -673,7 +743,75 @@ function ShopifyCard({ product: p }: { product: Product }) {
         </div>
         <div className="pcard__price">{price}</div>
       </div>
-    </Link>
+      <QuickAdd product={p} />
+    </article>
+  );
+}
+
+/* ── Inline quick-add ──
+ * Three states by product shape:
+ *   • sold-out      → render nothing (the SOLD corner badge is enough)
+ *   • multi-variant → "Choose options →" link to PDP (can't pick from grid)
+ *   • single variant + available → real add-to-cart button
+ * The button gives its own micro-feedback ("Adding…" → "Added ✓" for
+ * 1.4s) so the success path doesn't need a toast — only errors do. */
+function QuickAdd({ product }: { product: Product }) {
+  const { addCartItem } = useCart();
+  const [message, formAction, isPending] = useActionState(addItem, null);
+  const [justAdded, setJustAdded] = useState(false);
+  const wasPending = useRef(false);
+
+  useEffect(() => {
+    if (message) toast.error(message);
+  }, [message]);
+
+  /* "Added ✓" fires only on the pending → idle transition with no
+   * error message — i.e. when the server action actually completed
+   * successfully. Avoids showing success simultaneously with an error
+   * toast if the action rejects. */
+  useEffect(() => {
+    if (wasPending.current && !isPending && !message) {
+      setJustAdded(true);
+      const t = setTimeout(() => setJustAdded(false), 1400);
+      wasPending.current = isPending;
+      return () => clearTimeout(t);
+    }
+    wasPending.current = isPending;
+  }, [isPending, message]);
+
+  if (!product.availableForSale) return null;
+
+  /* Multi-variant pieces need PDP-side selection. */
+  if (product.variants.length !== 1) {
+    return (
+      <Link
+        href={`/product/${product.handle}`}
+        className="pcard__quick-add pcard__quick-add--ghost"
+        aria-label={`Choose options for ${product.title}`}
+      >
+        Choose options →
+      </Link>
+    );
+  }
+
+  const variant = product.variants[0]!;
+
+  return (
+    <form
+      action={() => {
+        addCartItem(variant, product);
+        formAction.bind(null, variant.id)();
+      }}
+    >
+      <button
+        type="submit"
+        disabled={isPending}
+        className={`pcard__quick-add${justAdded ? " is-added" : ""}`}
+        aria-label={`Add ${product.title} to cart`}
+      >
+        {isPending ? "Adding…" : justAdded ? "Added ✓" : "+ Add to cart"}
+      </button>
+    </form>
   );
 }
 

@@ -816,7 +816,6 @@ body::after {
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   padding: 18px 18px 22px;
-  cursor: pointer;
   background: transparent;
   transition: background .3s;
   text-decoration: none;
@@ -824,6 +823,28 @@ body::after {
   display: block;
 }
 .pcard:hover { background: var(--bg-1); }
+
+/* ── Stretched link ──
+ * The title is a real link, but its ::after covers the whole card so
+ * any unclaimed pixel still navigates to the PDP. Sibling controls
+ * (e.g. .pcard__quick-add) raise their z-index above this layer to
+ * remain interactive. */
+.pcard__stretched-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  position: static;
+}
+.pcard__stretched-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.pcard__stretched-link:focus-visible {
+  outline: 1px solid var(--cinnabar);
+  outline-offset: 2px;
+}
 .pcard__media {
   aspect-ratio: 1;
   background: var(--bg-2);
@@ -873,6 +894,54 @@ body::after {
 .pcard__zh { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--fg-3); letter-spacing: 0.12em; text-transform: uppercase; }
 .pcard__price { font-family: "JetBrains Mono", monospace; font-size: 12px; white-space: nowrap; color: var(--fg); letter-spacing: 0.04em; padding-top: 4px; }
 .pcard__stones { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* ── Inline quick-add button (sits above the stretched-link layer) ── */
+.pcard__quick-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px 12px;
+  position: relative;
+  z-index: 2;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line-2);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.pcard__quick-add:hover {
+  background: var(--cinnabar);
+  border-color: var(--cinnabar);
+  color: var(--fg);
+}
+.pcard__quick-add:focus-visible {
+  outline: 1px solid var(--cinnabar);
+  outline-offset: 2px;
+}
+.pcard__quick-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.pcard__quick-add.is-added {
+  background: var(--cinnabar);
+  border-color: var(--cinnabar);
+  color: var(--fg);
+}
+.pcard__quick-add--ghost {
+  color: var(--fg-3);
+}
+.pcard__quick-add--ghost:hover {
+  background: transparent;
+  border-color: var(--cinnabar);
+  color: var(--cinnabar);
+}
 .stone-dot {
   font-family: "JetBrains Mono", monospace;
   font-size: 9.5px;
@@ -1937,6 +2006,145 @@ body::after {
   padding: 48px 0 28px;
 }
 .shop-header__meta { display: block; }
+
+/* ── Text-search row (sits above the sticky filter bar) ── */
+.shop-search-row {
+  padding: 8px 0 14px;
+}
+.shop-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line-2);
+  background: var(--bg-1);
+  transition: border-color 0.15s;
+}
+.shop-search:focus-within { border-color: var(--cinnabar); }
+.shop-search__icon {
+  padding: 0 12px 0 14px;
+  font-size: 14px;
+  color: var(--fg-3);
+  pointer-events: none;
+}
+.shop-search__input {
+  flex: 1;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 12px 12px 12px 0;
+  color: var(--fg);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  min-width: 0;
+}
+.shop-search__input::placeholder { color: var(--fg-4); }
+.shop-search__input::-webkit-search-cancel-button { display: none; }
+.shop-search__clear {
+  flex-shrink: 0;
+  margin: 0 8px;
+  padding: 4px 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--fg-3);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.shop-search__clear:hover { color: var(--cinnabar); }
+
+/* ── Skeleton placeholders (loading shimmer) ───────────────────── */
+@keyframes kpcty-skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-2) 0%,
+    var(--bg-3) 50%,
+    var(--bg-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: kpcty-skeleton-shimmer 1.6s linear infinite;
+  border-radius: 1px;
+}
+.skeleton--block { display: block; }
+.skeleton--text  { display: block; height: 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* ── PDP notify-similar form (sold-out path) ───────────────────── */
+.pdp-notify {
+  border: 1px dashed var(--line-2);
+  background: var(--bg-1);
+  padding: 18px 20px;
+  display: grid;
+  gap: 10px;
+}
+.pdp-notify--ok { border-style: solid; border-color: var(--cinnabar); }
+.pdp-notify__kicker {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--cinnabar);
+}
+.pdp-notify__line {
+  font-size: 15px;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--fg-2);
+}
+.pdp-notify__form {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  position: relative;
+  margin-top: 4px;
+}
+.pdp-notify__input {
+  flex: 1;
+  appearance: none;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  outline: 0;
+  padding: 0 14px;
+  color: var(--fg);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  min-width: 0;
+}
+.pdp-notify__input:focus { border-color: var(--cinnabar); }
+.pdp-notify__input::placeholder { color: var(--fg-4); }
+.pdp-notify__err {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cinnabar);
+}
+
+/* ── PDP mobile sticky add-to-cart ─────────────────────────────── */
+.pdp-sticky-mobile { display: none; }
+@media (max-width: 768px) {
+  .pdp-sticky-mobile {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line-2);
+  }
+  .pdp-sticky-mobile form { margin: 0; }
+  /* Bottom-pad the page so the sticky bar never covers final content. */
+  .page-wrap { padding-bottom: 96px; }
+}
 
 .shop-filter-bar {
   display: flex;

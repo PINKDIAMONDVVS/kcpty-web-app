@@ -6,7 +6,8 @@ import type { Product, ProductOption, ProductVariant } from "lib/shopify/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 /* ── Helpers ── */
 function parseList(value: string | null | undefined): string[] {
@@ -348,9 +349,6 @@ export function PdpClient({
           {/* CTA */}
           <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
             <PdpAddToCart product={product} qty={qty} />
-            <button className="btn btn--ghost btn--block">
-              ♡ Save to wishlist
-            </button>
           </div>
 
           {/* Certificate */}
@@ -505,6 +503,17 @@ export function PdpClient({
         </div>
       </section>
 
+      {/* ── Mobile sticky add-to-cart ─────────────────────────────────
+       * Only visible <768px (CSS-gated). Mirrors the inline button so
+       * users deep in care/specs/recommendations can buy without
+       * scrolling back to the top. Hidden when out of stock — the
+       * inline notify form is the only path forward there. */}
+      {product.availableForSale && (
+        <div className="pdp-sticky-mobile" aria-hidden={false}>
+          <PdpAddToCart product={product} qty={qty} variant="sticky" />
+        </div>
+      )}
+
       {/* ── Recommendations ── */}
       {recommendations.length > 0 && (
         <section
@@ -626,13 +635,39 @@ function VariantSwatches({
 }
 
 /* ═══════════════════════════════════════════
-   Add-to-cart button (PDP-styled)
+   Add-to-cart button (PDP-styled).
+   `variant === "sticky"` renders the compact mobile sticky-bottom CTA;
+   otherwise it's the inline desktop button.
    ═══════════════════════════════════════════ */
-function PdpAddToCart({ product, qty }: { product: Product; qty: number }) {
+function PdpAddToCart({
+  product,
+  qty,
+  variant: cssVariant,
+}: {
+  product: Product;
+  qty: number;
+  variant?: "inline" | "sticky";
+}) {
   const { variants, availableForSale, priceRange } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
   const [message, formAction] = useActionState(addItem, null);
+
+  /* Toast any error string the server action returns. The aria-live
+   * region stays for screen-reader users; the toast is the visual
+   * counterpart sighted shoppers were missing. */
+  useEffect(() => {
+    if (message) toast.error(message);
+  }, [message]);
+
+  /* Out-of-stock path: replace the disabled button with an email capture.
+   * Sticky mobile bar is hidden in this state by the parent, so this
+   * only renders inline. */
+  if (!availableForSale) {
+    return cssVariant === "sticky" ? null : (
+      <NotifySimilarForm product={product} />
+    );
+  }
 
   const variant = variants.find((v) =>
     v.selectedOptions.every(
@@ -649,18 +684,6 @@ function PdpAddToCart({ product, qty }: { product: Product; qty: number }) {
     linePrice.currencyCode === "USD" ? "$" : `${linePrice.currencyCode} `;
   const addItemAction = formAction.bind(null, selectedVariantId);
 
-  if (!availableForSale) {
-    return (
-      <button
-        className="btn btn--ghost btn--block"
-        disabled
-        style={{ padding: 20, opacity: 0.5, cursor: "not-allowed" }}
-      >
-        SOLD OUT · 售罄
-      </button>
-    );
-  }
-
   return (
     <form
       action={async () => {
@@ -672,7 +695,10 @@ function PdpAddToCart({ product, qty }: { product: Product; qty: number }) {
       <button
         type="submit"
         className="btn btn--red btn--block"
-        style={{ padding: 20, opacity: selectedVariantId ? 1 : 0.55 }}
+        style={{
+          padding: cssVariant === "sticky" ? 16 : 20,
+          opacity: selectedVariantId ? 1 : 0.55,
+        }}
         disabled={!selectedVariantId}
       >
         Add to cart · {currency}
@@ -682,6 +708,120 @@ function PdpAddToCart({ product, qty }: { product: Product; qty: number }) {
         {message}
       </p>
     </form>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Notify-similar email capture (sold-out path)
+   ═══════════════════════════════════════════ */
+function NotifySimilarForm({ product }: { product: Product }) {
+  const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [state, setState] = useState<"idle" | "sending" | "ok" | "error">(
+    "idle",
+  );
+  const [errorMsg, setErrorMsg] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (state === "sending") return;
+    const trimmed = email.trim();
+    if (!trimmed) return;
+
+    setState("sending");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/notify-similar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmed,
+          honeypot,
+          productHandle: product.handle,
+          productTitle: product.title,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        ok?: boolean;
+      };
+      if (!res.ok || !data.ok) {
+        setErrorMsg(data.error ?? "Could not save your email. Try again.");
+        setState("error");
+        toast.error(data.error ?? "Could not save your email. Try again.");
+        return;
+      }
+      setState("ok");
+    } catch {
+      setErrorMsg("Network error. Please try again.");
+      setState("error");
+      toast.error("Network error. Please try again.");
+    }
+  }
+
+  if (state === "ok") {
+    return (
+      <div className="pdp-notify pdp-notify--ok">
+        <div className="mono up pdp-notify__kicker">✓ On the list · 入册</div>
+        <div className="serif pdp-notify__line">
+          We'll email you when a similar piece is cut.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pdp-notify">
+      <div className="mono up pdp-notify__kicker">
+        ✕ Sold out · 售罄 — but more are coming.
+      </div>
+      <div className="serif pdp-notify__line">
+        Each piece is one-of-one. Leave your email and we'll write when a
+        similar stone or wish surfaces.
+      </div>
+      <form onSubmit={handleSubmit} className="pdp-notify__form" noValidate>
+        <input
+          type="text"
+          name="company"
+          autoComplete="off"
+          tabIndex={-1}
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "-9999px",
+            opacity: 0,
+            pointerEvents: "none",
+          }}
+        />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@studio.email"
+          required
+          maxLength={254}
+          disabled={state === "sending"}
+          className="pdp-notify__input"
+          aria-label="Email address for back-in-stock notification"
+        />
+        <button
+          type="submit"
+          className="btn btn--red"
+          disabled={state === "sending" || !email.trim()}
+          style={{ flexShrink: 0 }}
+        >
+          {state === "sending" ? "Sending…" : "Notify me"}
+        </button>
+      </form>
+      {errorMsg && (
+        <div className="mono pdp-notify__err" role="alert">
+          {errorMsg}
+        </div>
+      )}
+    </div>
   );
 }
 

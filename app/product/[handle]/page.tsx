@@ -1,5 +1,6 @@
 import Footer from 'components/layout/footer';
 import { PdpClient } from 'components/product/pdp-client';
+import { PdpSkeleton } from 'components/skeletons/pdp-skeleton';
 import { HIDDEN_PRODUCT_TAG } from 'lib/constants';
 import { getProduct, getProductRecommendations } from 'lib/shopify';
 import { baseUrl } from 'lib/utils';
@@ -89,7 +90,7 @@ export default async function ProductPage(props: {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--bg)' }} />}>
+      <Suspense fallback={<PdpSkeleton />}>
         <PdpClient product={product} recommendations={recommendations} />
       </Suspense>
       <Footer />
