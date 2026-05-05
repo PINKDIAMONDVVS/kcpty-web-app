@@ -2,38 +2,14 @@
 
 import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { useErrorToast } from "lib/hooks";
+import { parseList, resolveIntent } from "lib/intents";
 import type { Product, ProductOption, ProductVariant } from "lib/shopify/types";
+import { formatPrice } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
-import { toast } from "sonner";
-
-/* ── Helpers ── */
-function parseList(value: string | null | undefined): string[] {
-  if (!value) return [];
-  try {
-    return JSON.parse(value) as string[];
-  } catch {
-    return [];
-  }
-}
-
-const INTENT_ZH: Record<string, string> = {
-  luck: "福",
-  love: "爱",
-  calm: "静",
-  courage: "勇",
-  wealth: "财",
-  wisdom: "慧",
-  protection: "护",
-  wish: "愿",
-};
-
-function fmt(amount: string, code: string) {
-  const n = parseFloat(amount);
-  return code === "USD" ? `$${n.toFixed(0)}` : `${code} ${n.toFixed(0)}`;
-}
+import { useActionState, useEffect, useRef, useState } from "react";
 
 type Combination = {
   id: string;
@@ -64,7 +40,7 @@ export function PdpClient({
   const intents = parseList(product.intents?.value);
   const materials = parseList(product.materials?.value);
   const primaryIntent = intents[0]?.toLowerCase() ?? "";
-  const intentZh = INTENT_ZH[primaryIntent] ?? "";
+  const intentZh = resolveIntent(primaryIntent).zh;
 
   const price = product.priceRange.minVariantPrice;
 
@@ -277,7 +253,7 @@ export function PdpClient({
                 className="display"
                 style={{ fontSize: "clamp(36px,4.5vw,56px)", lineHeight: 1 }}
               >
-                {fmt(price.amount, price.currencyCode)}{" "}
+                {formatPrice(price.amount, price.currencyCode)}{" "}
                 <span
                   className="serif-sc"
                   style={{ fontSize: 20, color: "var(--cinnabar)" }}
@@ -376,7 +352,7 @@ export function PdpClient({
                   <dt>Intent</dt>
                   <dd>
                     {intents
-                      .map((v) => `${INTENT_ZH[v.toLowerCase()] ?? ""} · ${v}`)
+                      .map((v) => `${resolveIntent(v).zh} · ${v}`)
                       .join(", ")}
                   </dd>
                 </div>
@@ -656,9 +632,7 @@ function PdpAddToCart({
   /* Toast any error string the server action returns. The aria-live
    * region stays for screen-reader users; the toast is the visual
    * counterpart sighted shoppers were missing. */
-  useEffect(() => {
-    if (message) toast.error(message);
-  }, [message]);
+  useErrorToast(message);
 
   /* Out-of-stock path: replace the disabled button with an email capture.
    * Sticky mobile bar is hidden in this state by the parent, so this
@@ -721,6 +695,16 @@ function NotifySimilarForm({ product }: { product: Product }) {
     "idle",
   );
   const [errorMsg, setErrorMsg] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
+
+  /* Cancel any in-flight submit if the user navigates away or the
+   * PDP unmounts mid-request. Prevents the React "set state on
+   * unmounted component" warning and avoids a wasted email send. */
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -730,6 +714,10 @@ function NotifySimilarForm({ product }: { product: Product }) {
 
     setState("sending");
     setErrorMsg("");
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
       const res = await fetch("/api/notify-similar", {
@@ -741,6 +729,7 @@ function NotifySimilarForm({ product }: { product: Product }) {
           productHandle: product.handle,
           productTitle: product.title,
         }),
+        signal: controller.signal,
       });
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -749,14 +738,16 @@ function NotifySimilarForm({ product }: { product: Product }) {
       if (!res.ok || !data.ok) {
         setErrorMsg(data.error ?? "Could not save your email. Try again.");
         setState("error");
-        toast.error(data.error ?? "Could not save your email. Try again.");
         return;
       }
       setState("ok");
-    } catch {
+    } catch (err) {
+      /* Aborted submits are intentional (unmount) — stay silent. */
+      if (err instanceof DOMException && err.name === "AbortError") return;
       setErrorMsg("Network error. Please try again.");
       setState("error");
-      toast.error("Network error. Please try again.");
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
     }
   }
 
@@ -830,8 +821,8 @@ function NotifySimilarForm({ product }: { product: Product }) {
    ═══════════════════════════════════════════ */
 function RecoCard({ product: p }: { product: Product }) {
   const intents = parseList(p.intents?.value);
-  const intentZh = INTENT_ZH[intents[0]?.toLowerCase() ?? ""] ?? "";
-  const price = fmt(
+  const intentZh = resolveIntent(intents[0] ?? "").zh;
+  const price = formatPrice(
     p.priceRange.minVariantPrice.amount,
     p.priceRange.minVariantPrice.currencyCode,
   );

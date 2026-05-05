@@ -1,3 +1,4 @@
+import { escapeHtml, jsonError, sendResendEmail } from "lib/email";
 import { NextResponse } from "next/server";
 
 /* Back-in-stock / "similar piece dropped" capture endpoint.
@@ -7,37 +8,16 @@ import { NextResponse } from "next/server";
  * - Honeypot field traps bots
  * - Escapes any user-supplied text in the email body
  *
- * Delivery:
- * - With RESEND_API_KEY set, emails CONTACT_TO_EMAIL with the captured
- *   address + the product the shopper was looking at, so the studio can
- *   match a future piece to a waiting buyer.
- * - Without RESEND_API_KEY, returns 503 + { configured: false } so the
- *   form can degrade gracefully in dev.
+ * Delivery is delegated to lib/email.ts.
  *
  * NOTE: This is a lightweight v1 — every request fires one email. If
  * volume grows, swap in a database / mailing list (Klaviyo, Loops,
- * Shopify customer with a tag) and dedupe by email + handle.
- */
+ * Shopify customer with a tag) and dedupe by email + handle. */
 
-const DEFAULT_FROM_EMAIL = "KPCTY <contact@kpcty.com>";
-const DEFAULT_TO_EMAIL = "contact@kpcty.com";
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const MAX_EMAIL_LEN = 254;
 const MAX_HANDLE_LEN = 200;
 const MAX_TITLE_LEN = 240;
-
-function jsonError(message: string, status: number, extra?: object) {
-  return NextResponse.json({ error: message, ...extra }, { status });
-}
-
-function escapeHtml(s: string) {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 export async function POST(req: Request) {
   let payload: Record<string, unknown> = {};
@@ -47,7 +27,6 @@ export async function POST(req: Request) {
     return jsonError("Invalid request.", 400);
   }
 
-  /* Honeypot — silent OK so bots can't probe response shape. */
   if (typeof payload.honeypot === "string" && payload.honeypot.length > 0) {
     return NextResponse.json({ ok: true });
   }
@@ -95,48 +74,32 @@ export async function POST(req: Request) {
   </div>
 </body></html>`;
 
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
-    console.warn(
-      "[notify-similar] RESEND_API_KEY not set — capture skipped.\n" +
-        "Set RESEND_API_KEY + CONTACT_TO_EMAIL in .env to enable.",
-    );
-    return jsonError(
-      "Notifications aren't configured yet. Please email us directly.",
-      503,
-      { configured: false },
-    );
-  }
+  const result = await sendResendEmail({ subject, text, html, replyTo: email });
 
-  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? DEFAULT_FROM_EMAIL;
-  const toEmail = process.env.CONTACT_TO_EMAIL ?? DEFAULT_TO_EMAIL;
-
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: [toEmail],
-        reply_to: email,
-        subject,
-        text,
-        html,
-      }),
-    });
-
-    if (!res.ok) {
-      const errBody = await res.json().catch(() => ({}));
-      console.error("[notify-similar] Resend rejected:", res.status, errBody);
+  switch (result.status) {
+    case "ok":
+      return NextResponse.json({ ok: true });
+    case "not-configured":
+      console.warn(
+        "[notify-similar] RESEND_API_KEY not set — capture skipped.",
+      );
+      return jsonError(
+        "Notifications aren't configured yet. Please email us directly.",
+        503,
+        { configured: false },
+      );
+    case "rejected":
+      console.error(
+        "[notify-similar] Resend rejected:",
+        result.httpStatus,
+        result.body,
+      );
       return jsonError("Could not save your email right now.", 502);
-    }
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[notify-similar] Network error reaching Resend:", err);
-    return jsonError("Network error. Please try again.", 500);
+    case "network-error":
+      console.error(
+        "[notify-similar] Network error reaching Resend:",
+        result.error,
+      );
+      return jsonError("Network error. Please try again.", 500);
   }
 }

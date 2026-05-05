@@ -1,3 +1,4 @@
+import { escapeHtml, jsonError, sendResendEmail } from "lib/email";
 import { NextResponse } from "next/server";
 
 /* Contact form endpoint.
@@ -8,49 +9,24 @@ import { NextResponse } from "next/server";
  * - Escapes HTML in the email body so user input can't inject markup
  * - Whitelists topic to a fixed enum
  *
- * Delivery:
- * - If RESEND_API_KEY is set → posts to Resend's REST API (no SDK needed)
- * - If not → returns { configured: false } so the client can fall back
- *   to mailto:, which keeps the form usable in development.
- *
- * Env vars used:
- * - RESEND_API_KEY      Resend bearer token
- * - CONTACT_FROM_EMAIL  Sender; must be on a Resend-verified domain.
- *                       Default: "KPCTY <contact@kpcty.com>"
- * - CONTACT_TO_EMAIL    Recipient inbox.
- *                       Default: "contact@kpcty.com"
- */
+ * Delivery is delegated to lib/email.ts. If RESEND_API_KEY is unset,
+ * the client receives 503 + { configured: false } so it can fall back
+ * to mailto: in development. */
 
-const DEFAULT_FROM_EMAIL = "KPCTY <contact@kpcty.com>";
-const DEFAULT_TO_EMAIL   = "contact@kpcty.com";
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const MAX_EMAIL_LEN = 254;
 
 const TOPICS = ["general", "commission", "wholesale", "press", "care"] as const;
 type Topic = (typeof TOPICS)[number];
 const TOPIC_LABEL: Record<Topic, string> = {
-  general:    "General",
+  general: "General",
   commission: "Commission",
-  wholesale:  "Wholesale",
-  press:      "Press / Studio",
-  care:       "Care & Repair",
+  wholesale: "Wholesale",
+  press: "Press / Studio",
+  care: "Care & Repair",
 };
 
-function jsonError(message: string, status: number, extra?: object) {
-  return NextResponse.json({ error: message, ...extra }, { status });
-}
-
-function escapeHtml(s: string) {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 export async function POST(req: Request) {
-  /* ── Parse body ── */
   let payload: Record<string, unknown> = {};
   try {
     payload = await req.json();
@@ -58,25 +34,22 @@ export async function POST(req: Request) {
     return jsonError("Invalid request.", 400);
   }
 
-  /* ── Honeypot ── */
   if (typeof payload.honeypot === "string" && payload.honeypot.length > 0) {
     return NextResponse.json({ ok: true });
   }
 
-  /* ── Sanitize ── */
   const str = (v: unknown, max = 4000) =>
     typeof v === "string" ? v.trim().slice(0, max) : "";
 
-  const email   = str(payload.email,   MAX_EMAIL_LEN).toLowerCase();
-  const name    = str(payload.name,    120);
-  const wish    = str(payload.wish,    140);
+  const email = str(payload.email, MAX_EMAIL_LEN).toLowerCase();
+  const name = str(payload.name, 120);
+  const wish = str(payload.wish, 140);
   const message = str(payload.message, 4000);
-  const rawTopic = str(payload.topic,  32);
+  const rawTopic = str(payload.topic, 32);
   const topic: Topic = (TOPICS as readonly string[]).includes(rawTopic)
     ? (rawTopic as Topic)
     : "general";
 
-  /* ── Validate ── */
   if (!email || email.length > MAX_EMAIL_LEN || !EMAIL_REGEX.test(email)) {
     return jsonError("Please enter a valid email address.", 400);
   }
@@ -84,7 +57,6 @@ export async function POST(req: Request) {
     return jsonError("Please write a message before sending.", 400);
   }
 
-  /* ── Build email body ── */
   const topicLabel = TOPIC_LABEL[topic];
   const subject = `KPCTY · ${topicLabel}${wish ? ` · ${wish}` : ""}`;
 
@@ -117,56 +89,28 @@ export async function POST(req: Request) {
   </div>
 </body></html>`;
 
-  /* ── Resend delivery ── */
-  const resendKey = process.env.RESEND_API_KEY;
-  if (!resendKey) {
-    console.warn(
-      "[contact] RESEND_API_KEY not set — message captured but not delivered.\n" +
-        "Add RESEND_API_KEY, CONTACT_FROM_EMAIL, CONTACT_TO_EMAIL to .env to enable delivery.",
-    );
-    return jsonError(
-      "Email service isn't configured yet — opening your email client instead.",
-      503,
-      { configured: false },
-    );
-  }
+  const result = await sendResendEmail({ subject, text, html, replyTo: email });
 
-  /* Resend requires a verified sending domain. CONTACT_FROM_EMAIL must be
-   * on a domain you've verified in your Resend dashboard.
-   * For dev with no verified domain, set CONTACT_FROM_EMAIL=onboarding@resend.dev. */
-  const fromEmail = process.env.CONTACT_FROM_EMAIL ?? DEFAULT_FROM_EMAIL;
-  const toEmail   = process.env.CONTACT_TO_EMAIL   ?? DEFAULT_TO_EMAIL;
-
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from:     fromEmail,
-        to:       [toEmail],
-        reply_to: email,
-        subject,
-        text,
-        html,
-      }),
-    });
-
-    if (!res.ok) {
-      const errBody = await res.json().catch(() => ({}));
-      console.error("[contact] Resend rejected:", res.status, errBody);
+  switch (result.status) {
+    case "ok":
+      return NextResponse.json({ ok: true });
+    case "not-configured":
+      console.warn(
+        "[contact] RESEND_API_KEY not set — message captured but not delivered.",
+      );
       return jsonError(
-        "We couldn't send your message. Please try again or email us directly at " +
-          toEmail,
+        "Email service isn't configured yet — opening your email client instead.",
+        503,
+        { configured: false },
+      );
+    case "rejected":
+      console.error("[contact] Resend rejected:", result.httpStatus, result.body);
+      return jsonError(
+        "We couldn't send your message. Please try again or email us directly.",
         502,
       );
-    }
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[contact] Network error reaching Resend:", err);
-    return jsonError("Network error. Please try again.", 500);
+    case "network-error":
+      console.error("[contact] Network error reaching Resend:", result.error);
+      return jsonError("Network error. Please try again.", 500);
   }
 }

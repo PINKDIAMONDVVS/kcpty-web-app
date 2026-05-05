@@ -19,6 +19,15 @@ export const ensureStartsWith = (stringToCheck: string, startsWith: string) =>
     ? stringToCheck
     : `${startsWith}${stringToCheck}`;
 
+/* Inline-text price formatter used by listing cards, PDP price block,
+ * and recommendation rails. Drops cents (correct for premium goods);
+ * shows "$X" for USD, "<CODE> X" for everything else. For richer
+ * locale-aware rendering inside its own <p>, see <Price>. */
+export const formatPrice = (amount: string, code: string) => {
+  const n = parseFloat(amount);
+  return code === "USD" ? `$${n.toFixed(0)}` : `${code} ${n.toFixed(0)}`;
+};
+
 export const validateEnvironmentVariables = () => {
   const requiredEnvironmentVariables = [
     "SHOPIFY_STORE_DOMAIN",

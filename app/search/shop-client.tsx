@@ -2,17 +2,18 @@
 
 import { addItem } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { useErrorToast } from "lib/hooks";
 import {
   getIntentZh as resolveProductIntentZh,
   parseList,
   resolveIntent,
 } from "lib/intents";
 import type { Product } from "lib/shopify/types";
+import { formatPrice } from "lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 
 /* Resolve a single Chinese seal char for an intent value. Uses the fuzzy
  * lookup from lib/intents (exact → word-by-word → substring), so values
@@ -25,11 +26,6 @@ function intentZh(key: string): string {
 /* Pull the first matching zh char from a product's intents list. */
 function getIntentZh(p: Product): string {
   return resolveProductIntentZh(parseList(p.intents?.value));
-}
-
-function fmt(amount: string, code: string) {
-  const n = parseFloat(amount);
-  return code === "USD" ? `$${n.toFixed(0)}` : `${code} ${n.toFixed(0)}`;
 }
 
 type SortKey = "default" | "price-asc" | "price-desc";
@@ -115,6 +111,29 @@ export function ShopClient({ products }: { products: Product[] }) {
     setMatFilter(initialMaterial);
   }, [initialMaterial]);
 
+  /* Pre-compute one lowercased searchable blob per product. This runs
+   * only when `products` changes (i.e. once per fetch), so each
+   * keystroke just reads from the WeakMap instead of re-allocating
+   * arrays + parsing JSON metafields for every product. */
+  const searchBlobs = useMemo(() => {
+    const map = new WeakMap<Product, string>();
+    for (const p of products) {
+      map.set(
+        p,
+        [
+          p.title,
+          p.description ?? "",
+          ...parseList(p.intents?.value),
+          ...parseList(p.materials?.value),
+          ...p.tags,
+        ]
+          .join(" ")
+          .toLowerCase(),
+      );
+    }
+    return map;
+  }, [products]);
+
   const filtered = useMemo(() => {
     let arr = [...products];
     if (matFilter !== "all")
@@ -132,15 +151,7 @@ export function ShopClient({ products }: { products: Product[] }) {
     if (q) {
       const tokens = q.split(/\s+/).filter(Boolean);
       arr = arr.filter((p) => {
-        const blob = [
-          p.title,
-          p.description ?? "",
-          ...parseList(p.intents?.value),
-          ...parseList(p.materials?.value),
-          ...p.tags,
-        ]
-          .join(" ")
-          .toLowerCase();
+        const blob = searchBlobs.get(p) ?? "";
         return tokens.every((t) => blob.includes(t));
       });
     }
@@ -157,7 +168,7 @@ export function ShopClient({ products }: { products: Product[] }) {
           parseFloat(a.priceRange.minVariantPrice.amount),
       );
     return arr;
-  }, [products, matFilter, intentFilter, sort, query]);
+  }, [products, matFilter, intentFilter, sort, query, searchBlobs]);
 
   const cntMat = (v: string) =>
     v === "all"
@@ -516,7 +527,7 @@ export function ShopClient({ products }: { products: Product[] }) {
         <div className="kpcty-container" style={{ padding: "20px 0 60px" }}>
           <div style={{ borderTop: "2px solid var(--line)" }}>
             {filtered.map((p) => {
-              const price = fmt(
+              const price = formatPrice(
                 p.priceRange.minVariantPrice.amount,
                 p.priceRange.minVariantPrice.currencyCode,
               );
@@ -674,7 +685,7 @@ export function ShopClient({ products }: { products: Product[] }) {
  * z-index to float above that ::after. */
 function ShopifyCard({ product: p }: { product: Product }) {
   const intentZh = getIntentZh(p);
-  const price = fmt(
+  const price = formatPrice(
     p.priceRange.minVariantPrice.amount,
     p.priceRange.minVariantPrice.currencyCode,
   );
@@ -761,9 +772,7 @@ function QuickAdd({ product }: { product: Product }) {
   const [justAdded, setJustAdded] = useState(false);
   const wasPending = useRef(false);
 
-  useEffect(() => {
-    if (message) toast.error(message);
-  }, [message]);
+  useErrorToast(message);
 
   /* "Added ✓" fires only on the pending → idle transition with no
    * error message — i.e. when the server action actually completed
