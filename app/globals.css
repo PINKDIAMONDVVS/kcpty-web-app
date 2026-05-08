@@ -3249,9 +3249,48 @@ body::after {
   border-color: var(--cinnabar);
 }
 
+/* Explicit shop CTA row — one pill per stone in the narrative.
+ * Mono uppercase pills, centred under the paragraph, wrapping to
+ * multiple lines for cards with 3 stones on narrow viewports. */
+.month-card__shop {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.month-card__shop-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  text-decoration: none;
+  border: 1px solid var(--line-2);
+  padding: 9px 14px;
+  border-radius: 999px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.month-card__shop-pill:hover {
+  color: var(--cinnabar);
+  border-color: var(--cinnabar);
+  background: var(--bg-1);
+}
+.month-card__shop-arrow {
+  color: var(--cinnabar);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
 @media (max-width: 480px) {
   .month-card { padding: 32px 22px; gap: 16px; }
   .month-card__bead-wrap { width: 140px; height: 140px; }
   .month-card__name { font-size: 38px; }
   .month-card__narrative { font-size: 14.5px; }
+  .month-card__shop-pill { font-size: 9.5px; padding: 8px 12px; }
 }

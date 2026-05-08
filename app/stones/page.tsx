@@ -343,11 +343,18 @@ const TOTAL = FAMILIES.reduce((n, f) => n + f.stones.length, 0);
  * each card. `narrative` is a JSX fragment so stone names can be
  * rendered inline as italic links via the <S> helper. */
 
+/* `stones` lists every catalogue stone referenced in the narrative,
+ * in narrative order. Renders as a row of pill-shaped shop buttons
+ * at the bottom of each month card so the inline narrative italics
+ * are reinforced by an explicit shop-this-stone CTA. `k` is the
+ * Shopify metafield material value passed to /search?material=... */
+type StoneRef = { en: string; k: string };
 type Month = {
   n: string;
   en: string;
   zodiac: { en: string; zh: string; range: string };
   primary: string;             // slug of the stone whose bead photo this card features
+  stones: StoneRef[];
   narrative: React.ReactNode;
 };
 
@@ -370,6 +377,11 @@ const MONTHS: Month[] = [
     en: "January",
     zodiac: { en: "Aquarius", zh: "水瓶座", range: "Jan 20 — Feb 18" },
     primary: "garnet",
+    stones: [
+      { en: "Garnet", k: "garnet" },
+      { en: "Rose Quartz", k: "rose quartz" },
+      { en: "Strawberry Quartz", k: "strawberry quartz" },
+    ],
     narrative: (
       <>
         January arrives quiet — the year still folded, the inbox almost
@@ -387,6 +399,10 @@ const MONTHS: Month[] = [
     en: "February",
     zodiac: { en: "Pisces", zh: "双鱼座", range: "Feb 19 — Mar 20" },
     primary: "amethyst",
+    stones: [
+      { en: "Amethyst", k: "amethyst" },
+      { en: "Agate", k: "agate" },
+    ],
     narrative: (
       <>
         February is the shortest month and the most patient. Its stone
@@ -402,6 +418,11 @@ const MONTHS: Month[] = [
     en: "March",
     zodiac: { en: "Aries", zh: "白羊座", range: "Mar 21 — Apr 20" },
     primary: "aquamarine",
+    stones: [
+      { en: "Aquamarine", k: "aquamarine" },
+      { en: "Amethyst", k: "amethyst" },
+      { en: "Garnet", k: "garnet" },
+    ],
     narrative: (
       <>
         March is a month of small bravery — the first warm afternoon,
@@ -419,6 +440,10 @@ const MONTHS: Month[] = [
     en: "April",
     zodiac: { en: "Taurus", zh: "金牛座", range: "Apr 21 — May 20" },
     primary: "clear-quartz",
+    stones: [
+      { en: "Clear Quartz", k: "clear quartz" },
+      { en: "Aquamarine", k: "aquamarine" },
+    ],
     narrative: (
       <>
         April traditionally lands on diamond — clear, hard, expensive.
@@ -435,6 +460,11 @@ const MONTHS: Month[] = [
     en: "May",
     zodiac: { en: "Gemini", zh: "双子座", range: "May 21 — Jun 21" },
     primary: "peridot",
+    stones: [
+      { en: "Peridot", k: "peridot" },
+      { en: "Fluorite", k: "fluorite" },
+      { en: "Citrine", k: "citrine" },
+    ],
     narrative: (
       <>
         May is for emerald in the old calendar — green, lush, expensive.
@@ -451,6 +481,10 @@ const MONTHS: Month[] = [
     en: "June",
     zodiac: { en: "Cancer", zh: "巨蟹座", range: "Jun 22 — Jul 22" },
     primary: "moonstone",
+    stones: [
+      { en: "Moonstone", k: "moonstone" },
+      { en: "Agate", k: "agate" },
+    ],
     narrative: (
       <>
         June asks for pearl in tradition — a grain of sand with a long
@@ -467,6 +501,11 @@ const MONTHS: Month[] = [
     en: "July",
     zodiac: { en: "Leo", zh: "狮子座", range: "Jul 23 — Aug 22" },
     primary: "garnet",
+    stones: [
+      { en: "Garnet", k: "garnet" },
+      { en: "Citrine", k: "citrine" },
+      { en: "Moonstone", k: "moonstone" },
+    ],
     narrative: (
       <>
         July traditionally pairs with ruby — a red that wants to be
@@ -484,6 +523,11 @@ const MONTHS: Month[] = [
     en: "August",
     zodiac: { en: "Virgo", zh: "处女座", range: "Aug 23 — Sep 22" },
     primary: "peridot",
+    stones: [
+      { en: "Peridot", k: "peridot" },
+      { en: "Citrine", k: "citrine" },
+      { en: "Aquamarine", k: "aquamarine" },
+    ],
     narrative: (
       <>
         August belongs cleanly to <S m="peridot">Peridot</S> in both
@@ -500,6 +544,11 @@ const MONTHS: Month[] = [
     en: "September",
     zodiac: { en: "Libra", zh: "天秤座", range: "Sep 23 — Oct 22" },
     primary: "lapis-lazuli",
+    stones: [
+      { en: "Lapis Lazuli", k: "lapis lazuli" },
+      { en: "Amethyst", k: "amethyst" },
+      { en: "Aquamarine", k: "aquamarine" },
+    ],
     narrative: (
       <>
         September traditionally pairs with sapphire — a blue with
@@ -517,6 +566,11 @@ const MONTHS: Month[] = [
     en: "October",
     zodiac: { en: "Scorpio", zh: "天蝎座", range: "Oct 23 — Nov 21" },
     primary: "black-tourmaline",
+    stones: [
+      { en: "Black Tourmaline", k: "black tourmaline" },
+      { en: "Garnet", k: "garnet" },
+      { en: "Moonstone", k: "moonstone" },
+    ],
     narrative: (
       <>
         October is tourmaline in the modern birthstone list — usually
@@ -533,6 +587,11 @@ const MONTHS: Month[] = [
     en: "November",
     zodiac: { en: "Sagittarius", zh: "射手座", range: "Nov 22 — Dec 21" },
     primary: "citrine",
+    stones: [
+      { en: "Citrine", k: "citrine" },
+      { en: "Amethyst", k: "amethyst" },
+      { en: "Rose Quartz", k: "rose quartz" },
+    ],
     narrative: (
       <>
         November belongs to topaz — usually golden, sometimes blue.{" "}
@@ -550,6 +609,10 @@ const MONTHS: Month[] = [
     en: "December",
     zodiac: { en: "Capricorn", zh: "摩羯座", range: "Dec 22 — Jan 19" },
     primary: "aquamarine",
+    stones: [
+      { en: "Aquamarine", k: "aquamarine" },
+      { en: "Amethyst", k: "amethyst" },
+    ],
     narrative: (
       <>
         December pairs with tanzanite or turquoise — both blue, both
@@ -673,6 +736,25 @@ export default function StonesPage() {
                   <div className="mono month-card__dates">{m.zodiac.range}</div>
                 </header>
                 <p className="serif month-card__narrative">{m.narrative}</p>
+                {/* Explicit shop CTAs — one pill per stone the
+                 * narrative references, in the same order. The
+                 * narrative italics still link inline; these pills
+                 * are the obvious shop-this-stone affordance for
+                 * users who scan rather than read. */}
+                <div className="month-card__shop">
+                  {m.stones.map((s) => (
+                    <Link
+                      key={s.en}
+                      href={`/search?material=${encodeURIComponent(s.k)}`}
+                      className="month-card__shop-pill"
+                    >
+                      <span className="month-card__shop-arrow" aria-hidden>
+                        →
+                      </span>
+                      {s.en}
+                    </Link>
+                  ))}
+                </div>
               </article>
             ))}
           </div>
