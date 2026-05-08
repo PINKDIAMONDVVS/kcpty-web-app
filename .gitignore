@@ -37,3 +37,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# stones page — generation backups + diagnostic outputs
+# (the production beads at /public/stones/*.png and
+#  /public/stones/months/*.png stay tracked.)
+public/stones/_preview/
+public/stones/_pre-fix-backup/
+public/stones/_pre-tone-backup/
+public/stones/og/

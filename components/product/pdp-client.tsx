@@ -836,6 +836,7 @@ function RecoCard({ product: p }: { product: Product }) {
             alt={p.featuredImage.altText || p.title}
             width={400}
             height={400}
+            sizes="(max-width: 480px) 100vw, (max-width: 1024px) 50vw, 25vw"
             style={{
               width: "100%",
               height: "100%",

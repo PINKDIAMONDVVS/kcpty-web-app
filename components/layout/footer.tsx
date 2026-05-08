@@ -54,6 +54,7 @@ async function getFooterFacets() {
 
 const STUDIO_LINKS = [
   { label: "Shop", href: "/search" },
+  { label: "Stones", href: "/stones" },
   { label: "About", href: "/about" },
   { label: "Lookbook", href: "/lookbook" },
 ];

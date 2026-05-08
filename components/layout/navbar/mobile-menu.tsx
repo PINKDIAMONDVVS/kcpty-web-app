@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 const NAV = [
   { label: "Home",     zh: "家", href: "/" },
   { label: "Shop",     zh: "店", href: "/search" },
+  { label: "Stones",   zh: "石", href: "/stones" },
   { label: "Lookbook", zh: "册", href: "/lookbook" },
   { label: "Studio",   zh: "说", href: "/about" },
   { label: "Contact",  zh: "联", href: "/contact" },

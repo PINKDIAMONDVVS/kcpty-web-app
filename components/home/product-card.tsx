@@ -1,12 +1,8 @@
 import { getIntentZh, parseList } from 'lib/intents';
 import type { Product } from 'lib/shopify/types';
+import { formatPrice } from 'lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-
-function fmt(amount: string, code: string) {
-  const n = parseFloat(amount);
-  return code === 'USD' ? `$${n.toFixed(0)}` : `${code} ${n.toFixed(0)}`;
-}
 
 export function ProductCard({ p }: { p: Product }) {
   const intents   = parseList(p.intents?.value);
@@ -24,6 +20,7 @@ export function ProductCard({ p }: { p: Product }) {
             alt={p.featuredImage.altText || p.title}
             width={600}
             height={600}
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1100px) 33vw, 20vw"
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
         )}
@@ -58,7 +55,7 @@ export function ProductCard({ p }: { p: Product }) {
           )}
         </div>
         <div className="pcard__price">
-          {fmt(p.priceRange.minVariantPrice.amount, p.priceRange.minVariantPrice.currencyCode)}
+          {formatPrice(p.priceRange.minVariantPrice.amount, p.priceRange.minVariantPrice.currencyCode)}
         </div>
       </div>
     </Link>
