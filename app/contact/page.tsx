@@ -79,8 +79,6 @@ export default function ContactPage() {
             </div>
             <div className="mono up contact-head__meta">
               Quick Reply
-              <br />
-              {/* <span style={{ color: "var(--cinnabar)" }}>·</span> Mon – Fri */}
             </div>
           </div>
         </section>
@@ -100,25 +98,6 @@ export default function ContactPage() {
             >
               ⦿ The studio · 工坊
             </div>
-            {/* <p
-              className="serif"
-              style={{
-                fontSize: 22,
-                fontWeight: 300,
-                lineHeight: 1.45,
-                letterSpacing: "-0.01em",
-                color: "var(--fg)",
-                maxWidth: "40ch",
-                marginBottom: 32,
-              }}
-            >
-              We knot every piece by hand in a one-room studio in Philadelphia
-              — usually with a pot of{" "}
-              <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
-                longjing
-              </em>{" "}
-              on, sometimes with the cat on the worktable.
-            </p> */}
 
             <dl style={{ margin: 0 }}>
               {KV_ROWS.map(([k, v]) => (
@@ -137,73 +116,6 @@ export default function ContactPage() {
               ))}
             </dl>
 
-            {/* Visit call-out */}
-            {/* <div
-              style={{
-                marginTop: 36,
-                padding: 20,
-                border: "1px solid var(--line-2)",
-                background: "var(--bg-1)",
-              }}
-            >
-              <div
-                className="mono up"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.22em",
-                  color: "var(--cinnabar)",
-                  marginBottom: 10,
-                }}
-              >
-                ⊕ Visit · 来访
-              </div>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "var(--fg-2)",
-                  lineHeight: 1.55,
-                  margin: 0,
-                }}
-              >
-                The studio runs by appointment only — small space, big mess.
-                Book a 30-minute visit to try every piece, get sized, or
-                commission something from scratch.
-              </p>
-              <Link
-                href="mailto:contact@kpcty.com?subject=Studio%20visit%20request"
-                className="btn-pill"
-                style={{
-                  marginTop: 14,
-                  color: "var(--fg)",
-                  borderColor: "var(--fg)",
-                  display: "inline-flex",
-                }}
-              >
-                Book a visit ▶
-              </Link>
-            </div> */}
-
-            {/* Press */}
-            {/* <div style={{ marginTop: 36 }}>
-              <div
-                className="mono up"
-                style={{
-                  fontSize: 10.5,
-                  letterSpacing: "0.22em",
-                  color: "var(--fg-3)",
-                  marginBottom: 14,
-                }}
-              >
-                ⦿ Press · 媒体
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {PRESS.map((p) => (
-                  <span key={p} className="chip">
-                    {p}
-                  </span>
-                ))}
-              </div>
-            </div> */}
           </div>
 
           {/* RIGHT — terminal-style form */}

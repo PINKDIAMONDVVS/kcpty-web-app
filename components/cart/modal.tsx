@@ -116,7 +116,7 @@ export default function CartModal() {
                 <button
                   onClick={closeCart}
                   aria-label="Close cart"
-                  style={{ background: 'transparent', border: '1px solid var(--line-2)', color: 'var(--fg)', width: 32, height: 32, cursor: 'pointer', fontFamily: 'inherit', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ background: 'transparent', border: '1px solid var(--line-2)', color: 'var(--fg)', width: 44, height: 44, cursor: 'pointer', fontFamily: 'inherit', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   ×
                 </button>

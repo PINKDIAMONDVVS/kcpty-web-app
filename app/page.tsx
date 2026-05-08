@@ -158,13 +158,6 @@ export default async function HomePage() {
     )
     .slice(0, 5);
 
-  const latestUpdate = newest[0]?.updatedAt
-    ? new Date(newest[0].updatedAt)
-    : null;
-  const latestUpdateLabel = latestUpdate
-    ? `${String(latestUpdate.getMonth() + 1).padStart(2, "0")}·${String(latestUpdate.getDate()).padStart(2, "0")}·${String(latestUpdate.getFullYear()).slice(-2)}`
-    : "";
-
   return (
     <div className="page-wrap">
       {/* ── HERO ─────────────────────────────────────────────────────── */}
@@ -260,18 +253,6 @@ export default async function HomePage() {
               <Link href="/about" className="btn btn--ghost">
                 Read the manifesto
               </Link>
-              {/* <span
-                className="mono"
-                style={{
-                  marginLeft: 8,
-                  fontSize: 10.5,
-                  color: "var(--fg-4)",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                }}
-              >
-                29 objects · 8 wishes · 1-of-1
-              </span> */}
             </div>
           </div>
 
@@ -607,16 +588,6 @@ export default async function HomePage() {
                 新品
               </em>
             </h2>
-            {/* <div className="sec-head__meta">
-              {shopifyProducts.length} PIECE
-              {shopifyProducts.length === 1 ? "" : "S"}
-              {latestUpdateLabel && (
-                <>
-                  <br />
-                  LAST UPDATED {latestUpdateLabel}
-                </>
-              )}
-            </div> */}
           </div>
         </div>
         <div className="season-grid">

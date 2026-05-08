@@ -29,7 +29,6 @@ function getIntentZh(p: Product): string {
 }
 
 type SortKey = "default" | "price-asc" | "price-desc";
-type ViewKey = "grid" | "list";
 type DropdownKey = "intent" | "material" | "sort" | null;
 
 /* ── Reusable dropdown hook: close on outside click + Escape ── */
@@ -100,7 +99,6 @@ export function ShopClient({ products }: { products: Product[] }) {
   const [matFilter, setMatFilter] = useState(initialMaterial);
   const [intentFilter, setIntentFilter] = useState(initialIntent);
   const [sort, setSort] = useState<SortKey>("default");
-  const [view, setView] = useState<ViewKey>("grid");
   const [query, setQuery] = useState(initialQuery);
 
   /* Sync if URL changes (e.g. clicking an intent card while already on /search) */
@@ -457,19 +455,6 @@ export function ShopClient({ products }: { products: Product[] }) {
             )}
           </div>
 
-          {/* Grid / List toggle */}
-          {/* <div style={{ display: "flex", border: "1px solid var(--line-2)"}}>
-            <ViewBtn active={view === "grid"} onClick={() => setView("grid")}>
-              ⊞
-            </ViewBtn>
-            <ViewBtn
-              active={view === "list"}
-              onClick={() => setView("list")}
-              borderLeft
-            >
-              ≡
-            </ViewBtn>
-          </div> */}
         </div>
       </div>
 
@@ -513,127 +498,12 @@ export function ShopClient({ products }: { products: Product[] }) {
         </div>
       )}
 
-      {/* ── Grid view ── */}
-      {view === "grid" && filtered.length > 0 && (
+      {/* ── Grid ── */}
+      {filtered.length > 0 && (
         <div className="shop-grid">
           {filtered.map((p) => (
             <ShopifyCard key={p.id} product={p} />
           ))}
-        </div>
-      )}
-
-      {/* ── List / index view ── */}
-      {view === "list" && filtered.length > 0 && (
-        <div className="kpcty-container" style={{ padding: "20px 0 60px" }}>
-          <div style={{ borderTop: "2px solid var(--line)" }}>
-            {filtered.map((p) => {
-              const price = formatPrice(
-                p.priceRange.minVariantPrice.amount,
-                p.priceRange.minVariantPrice.currencyCode,
-              );
-              const intentsArr = parseList(p.intents?.value);
-              const materialsArr = parseList(p.materials?.value);
-              return (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.handle}`}
-                  className="lift shop-list-row"
-                >
-                  <div
-                    style={{
-                      aspectRatio: "1",
-                      background: "var(--bg-2)",
-                      overflow: "hidden",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {p.featuredImage?.url && (
-                      <Image
-                        src={p.featuredImage.url}
-                        alt={p.featuredImage.altText || p.title}
-                        width={72}
-                        height={72}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    )}
-                  </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div
-                      className="serif"
-                      style={{
-                        fontSize: 20,
-                        lineHeight: 1.1,
-                        color: "var(--fg)",
-                      }}
-                    >
-                      {p.title}
-                    </div>
-                    {getIntentZh(p) && (
-                      <div
-                        className="serif-sc"
-                        style={{
-                          fontSize: 13,
-                          color: "var(--cinnabar)",
-                          marginTop: 4,
-                        }}
-                      >
-                        {getIntentZh(p)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="sm-hide">
-                    {intentsArr.map((v) => (
-                      <div
-                        key={v}
-                        className="mono"
-                        style={{
-                          fontSize: 9.5,
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          color: "var(--fg-3)",
-                          lineHeight: 1.8,
-                        }}
-                      >
-                        ⊕ {v}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="sm-hide">
-                    {materialsArr.map((v) => (
-                      <div
-                        key={v}
-                        className="mono"
-                        style={{
-                          fontSize: 9.5,
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          color: "var(--fg-3)",
-                          lineHeight: 1.8,
-                        }}
-                      >
-                        ⦿ {v}
-                      </div>
-                    ))}
-                  </div>
-                  <div
-                    className="mono"
-                    style={{
-                      fontSize: 13,
-                      textAlign: "right",
-                      color: "var(--fg)",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {price}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
         </div>
       )}
 
@@ -708,6 +578,7 @@ function ShopifyCard({ product: p }: { product: Product }) {
             alt={p.featuredImage.altText || p.title}
             width={600}
             height={600}
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1100px) 33vw, 25vw"
             style={{
               width: "100%",
               height: "100%",
@@ -955,34 +826,3 @@ function DropOption({
   );
 }
 
-/* ── Grid / List view toggle ── */
-function ViewBtn({
-  active,
-  onClick,
-  children,
-  borderLeft,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  borderLeft?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "8px 12px",
-        background: active ? "var(--cinnabar)" : "transparent",
-        color: active ? "var(--fg)" : "var(--fg-3)",
-        border: "none",
-        borderLeft: borderLeft ? "1px solid var(--line-2)" : undefined,
-        cursor: "pointer",
-        fontFamily: "JetBrains Mono, monospace",
-        fontSize: 12,
-        letterSpacing: "0.08em",
-      }}
-    >
-      {children}
-    </button>
-  );
-}

@@ -37,27 +37,6 @@ const TIMELINE = [
   },
 ];
 
-const PRINCIPLES = [
-  {
-    n: "一",
-    p: "YĪ · ONE",
-    t: "Every stone is named.",
-    d: 'We can tell you which village in Xinjiang the jade came from, which forest grew the agarwood, and who strung it. No "responsibly sourced" fog language. Names or nothing.',
-  },
-  {
-    n: "二",
-    p: "ÈR · TWO",
-    t: "No drop is restocked.",
-    d: "Once S1-14 is gone, she is gone. We'd rather sell out than repeat ourselves. Beads are material; people are unique; new drops deserve new material.",
-  },
-  {
-    n: "三",
-    p: "SĀN · THREE",
-    t: "Built to be re-strung.",
-    d: "Silk stretches with wear — that's the material being honest. Bring your KPCTY back any season and we'll re-cord it as a paid service. A cheap thread would be the whole brand's problem.",
-  },
-];
-
 export default function AboutPage() {
   return (
     <>
@@ -85,11 +64,6 @@ export default function AboutPage() {
                 <em style={{ color: "var(--cinnabar)" }}>beads for thinking</em>{" "}
                 — for a generation that never knew it was missing them.
               </p>
-              {/* <p className="serif about-intro__sub">
-                We aren't trying to be an Asian version of anything. We aren't
-                trying to go viral. We're trying to make pieces that your
-                friends ask about and your grandmother nods at.
-              </p> */}
             </div>
           </div>
         </section>
@@ -128,31 +102,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-
-        {/* ── Values ── */}
-        {/* <section className="kpcty-container about-section">
-          <div className="sec-head" style={{ paddingTop: 0 }}>
-            <div className="sec-head__num">§ Principles · 三则</div>
-            <h2 className="display sec-head__title">
-              Three{" "}
-              <em style={{ color: "var(--cinnabar)", fontStyle: "italic" }}>
-                rules
-              </em>
-              .
-            </h2>
-            <div className="sec-head__meta">NON-NEGOTIABLE</div>
-          </div>
-          <div className="about-values">
-            {PRINCIPLES.map((v) => (
-              <div key={v.n} className="about-values__cell">
-                <div className="serif-sc about-values__ghost">{v.n}</div>
-                <div className="mono up about-values__pinyin">{v.p}</div>
-                <div className="serif about-values__title">{v.t}</div>
-                <p className="about-values__body">{v.d}</p>
-              </div>
-            ))}
-          </div>
-        </section> */}
 
         {/* ── Founder letter ── */}
         <section className="about-section about-section--card">
@@ -217,35 +166,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-
-        {/* ── Press ── */}
-        {/* <section className="kpcty-container about-press">
-          <div
-            className="mono up"
-            style={{
-              fontSize: 11,
-              opacity: 0.5,
-              letterSpacing: "0.18em",
-              marginBottom: 24,
-            }}
-          >
-            As featured in · 媒体
-          </div>
-          <div className="about-press__row">
-            {[
-              "NEW YORK TIMES",
-              "VOGUE CHINA",
-              "SSENSE",
-              "HYPEBEAST",
-              "THE CUT",
-              "AIR MAIL",
-            ].map((p) => (
-              <div key={p} className="serif about-press__name">
-                {p}
-              </div>
-            ))}
-          </div>
-        </section> */}
 
         {/* ── CTA ── */}
         <section className="about-cta">

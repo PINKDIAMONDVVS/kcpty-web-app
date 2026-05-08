@@ -3,6 +3,7 @@ import { Navbar } from "components/layout/navbar";
 import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { getCart } from "lib/shopify";
+import type { Viewport } from "next";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -42,6 +43,16 @@ export const metadata = {
     follow: true,
     index: true,
   },
+};
+
+/* Mobile-first viewport. interactiveWidget=resizes-content tells modern
+ * browsers to reflow the page when the on-screen keyboard appears,
+ * instead of letting the keyboard cover fixed-bottom inputs (notify
+ * form, contact form, mobile sticky CTA). */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
 };
 
 const orgJsonLd = {
@@ -86,6 +97,16 @@ export default async function RootLayout({
   return (
     <html lang="en" className={GeistSans.variable}>
       <body className="selection:bg-purple-900 selection:text-white">
+        {/* Resource hint for the Shopify CDN — every product image is
+         * hosted there. React 19 hoists the <link> to <head>
+         * automatically, so we get the perf benefit without
+         * re-introducing the explicit <head> element that triggers
+         * hydration mismatches with browser extensions. */}
+        <link
+          rel="preconnect"
+          href="https://cdn.shopify.com"
+          crossOrigin="anonymous"
+        />
         {/* JSON-LD lives in <body> rather than <head> so browser extensions
          * that inject into <head> don't trigger React hydration mismatches.
          * Google's structured-data parser accepts either location. */}
@@ -97,9 +118,16 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
+        {/* Keyboard / screen-reader skip link. Stays off-screen until
+         * focused via Tab, then jumps the user past the navbar to the
+         * <main> region. Visible only on focus, so it doesn't intrude
+         * on the editorial design for sighted mouse users. */}
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <CartProvider cartPromise={cart}>
           <Navbar />
-          <main>
+          <main id="main">
             {children}
             <Toaster closeButton />
             <WelcomeToast />
